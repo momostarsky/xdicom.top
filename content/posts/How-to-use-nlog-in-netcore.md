@@ -1,6 +1,7 @@
 ---
 title: "DOTNET CORE使用NLOG"
 description: "利用NLog库來記錄Log.便于调试及查看运行日志"
+date: 2025-11-17
 draft: false
 ---
 

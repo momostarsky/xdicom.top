@@ -2,6 +2,8 @@ baseURL = "https://xdicom.com/"
 languageCode = "zh-CN"
 title = "Cloud Medical Imaging Lab | 云影像技术研究"
 theme = "PaperMod"
+[build]
+  summaryLength = 120  # 默认是 70 个字（英文单词或中文字符）
 
 [params]
   description = "专注于医学影像的技术的学习,传播及应用,涉及DICOM标准,PACS开发等.医学2D或是3D影像的解析及呈现,包括DCMTK,FoDICOM,DCH4CHE, VTK.js等开源软件项目的学习及应用"
@@ -19,4 +21,11 @@ theme = "PaperMod"
     url = "/posts/"
     weight = 2
 
-
+  [[menu.main]]
+    name = "关于"
+    url = "/about/"
+    weight = 3
+  [[menu.main]]
+    name = "联系"
+    url = "/contact/"
+    weight = 4

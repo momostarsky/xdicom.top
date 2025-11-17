@@ -2,6 +2,7 @@
 title: "DICOM文件中核心Infomation 结构及说明"
 date: 2025-11-14T16:17:56+08:00
 description: "DICOM文件中核心对象模型结构及说明"
+keywords: "DICOM PACS"
 draft: false
 ---
 

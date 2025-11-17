@@ -1,6 +1,7 @@
 ---
 title: "如何利用Fo-DICOM库修改DICOM文件的传输语法或是编码格式"
 date: 2025-11-15T16:17:56+08:00
+keywords: "Fo-DICOM ChangeTransferSyntax"
 description: "利用FODICOM库修改DICOM文件的传输语法或是编码格式,使之用于WebDICOM的呈现或是压缩文件大小以节省网络流量和磁盘空间,特别是对于归档文件."
 draft: false
 ---

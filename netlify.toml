@@ -1,0 +1,10 @@
+{
+  "name": "xdicom",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "hugo --gc --minify"
+  },
+  "devDependencies": {
+    "hugo-bin": "^0.136.5"
+  }
+}

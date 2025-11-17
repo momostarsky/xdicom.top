@@ -1,7 +1,0 @@
-{
-  "buildCommand": "git submodule update --init --recursive && hugo --gc --minify -b https://xdicom.com/",
-  "outputDirectory": "public",
-  "env": {
-    "HUGO_VERSION": "0.152.2"
-  }
-}

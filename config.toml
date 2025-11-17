@@ -1,6 +1,7 @@
-baseURL = "http://localhost:1313/"
+baseURL = "https://xdicom.com/"
 languageCode = "zh-CN"
 title = "Cloud Medical Imaging Lab | 云影像技术研究"
+theme = "PaperMod"
 
 [params]
   description = "一个用 Hugo 搭建的内容网站"

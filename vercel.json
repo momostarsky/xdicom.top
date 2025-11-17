@@ -1,7 +1,13 @@
 {
-  "build": {
-    "env": {
-      "HUGO_VERSION": "0.136.5"
+  "version": 2,
+  "builds": [
+    {
+      "src": "hugo.*",
+      "use": "@vercel/static-build"
     }
+  ],
+  "buildCommand": "git submodule update --init --recursive && hugo --gc --minify -b https://xdicom.com/",
+  "env": {
+    "HUGO_VERSION": "0.136.5"
   }
 }

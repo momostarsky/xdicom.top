@@ -1,5 +1,5 @@
 ---
-title: "联系"
+title: "Contact"
 date: 2025-11-17
 type: "page"
 layout: "single"

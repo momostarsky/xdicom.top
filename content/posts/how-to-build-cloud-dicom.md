@@ -96,4 +96,4 @@ MessageBody = {
 How To Build A Cloud DICOM-WEB Service. Flow Me:
 1.  [how to use fo-dicom construct cstore-scu](/posts/1-how-to-use-fo-dicom-construct-cstore-scu)
    
-2.  [DICOM-Cloud-Prepare](/posts/2-DICOM-Cloud-Prepare)
+2.  [DICOM-Cloud-Prepare](/posts/2-dicom-cloud-prepare)

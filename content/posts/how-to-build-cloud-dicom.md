@@ -4,6 +4,8 @@ date: 2025-11-19T10:23:56+08:00
 keywords: "DICOM-WEB , medical imaging,healthcare cloud,DICOM storage"
 description: "如何构建云DICOM-WEB服务."
 draft: false
+weight: 1
+featured: true
 ---
 
 如何利用开源项目,构建分布式DICOM-WEB服务.

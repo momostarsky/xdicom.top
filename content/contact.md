@@ -5,6 +5,10 @@ type: "page"
 layout: "single"
 ---
 
-目前暂未开放此功能！
+You Can  Contact Me with Email:
+
+<a href="mailto:oscar.xdev@outlook.com">oscar.xdev@outlook.com</a>
+
+Thanks for your attention and support!
 
 感谢您的关注与支持！

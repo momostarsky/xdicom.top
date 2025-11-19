@@ -94,4 +94,4 @@ MessageBody = {
 4. PgSQL 技能
 
 How To Build A Cloud DICOM-WEB Service. Flow Me:
-1.  [1-how-to-use-fo-dicom-construct-cstore-scu](/posts/1-how-to-use-fo-dicom-construct-cstore-scu)
+1.  [how to use fo-dicom construct cstore-scu](/posts/1-how-to-use-fo-dicom-construct-cstore-scu)

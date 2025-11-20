@@ -2,6 +2,7 @@ baseURL = "https://xdicom.com/"
 languageCode = "zh-CN"
 title = "Cloud Medical Imaging Lab | 云影像技术研究"
 theme = "PaperMod"
+ignoreLogs = ['warning-goldmark-raw-html']
 [build]
   summaryLength = 120  # 默认是 70 个字（英文单词或中文字符）
 

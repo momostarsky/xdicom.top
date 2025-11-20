@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Disallow specific paths if needed (optional)
+# Disallow: /private/
+# Disallow: /admin/
+
+Sitemap: https://xdicom.com/sitemap.xml

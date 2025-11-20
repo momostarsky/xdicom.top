@@ -65,9 +65,9 @@ MessageBody = {
 
 ***存储文件及元数据路径:***
 
-1. 存储文件路径: ${ROOT}/<TenantID>/<StudyInstanceUID>/<SeriesInstanceUID>/<SopInstanceUID>.dcm
-2. StudyMetadata 存储路径: ${ROOT}/<TenantID>/metadata/<StudyInstanceUID>/<SeriesInstanceUID>.json
-3. SeriesMetadata 存储路径: ${ROOT}/<TenantID>/metadata/<StudyInstanceUID>.json
+1. 存储文件路径: ${ROOT}/TenantID/StudyInstanceUID/SeriesInstanceUID/SopInstanceUID.dcm
+2. StudyMetadata 存储路径: ${ROOT}/metadata/StudyInstanceUID/SeriesInstanceUID.json
+3. SeriesMetadata 存储路径: ${ROOT}/metadata/StudyInstanceUID.json
 
 ***开发过程中需要用到的工具:***
 
@@ -98,9 +98,9 @@ How To Build A Cloud DICOM-WEB Service. Flow Me:
    
 2.  [DICOM-Cloud-Prepare](/posts/2-dicom-cloud-prepare)
 
-3.  [DICOM-Cloud Part ONE Database-Design/](/posts/3.1-dicom-database-design)
+3.  [DICOM-Cloud Part ONE Database-Design](/posts/3.1-dicom-database-design)
    
-4.  [DICOM-Cloud Part ONE Database-TypeDefines/](/posts/3.2-dicom-database-types)
+4.  [DICOM-Cloud Part ONE Database-TypeDefines](/posts/3.2-dicom-database-types)
 
 Use Cornerstone3D to View DICOM Images in a Web Browser.
 
@@ -108,21 +108,21 @@ And finally :
  
 ![图像展示 How to load Dicom Image With WADO-RS](/1.png)
 
-![反色功能 DICOM Invert Color With Special](/2.png)
+![反色功能 DICOM Viewer Invert Color](/2.png)
 
 
 ![DICOM View Load Default CT Images](/3.png)
 
 
-![调窗 DICOM Viewer  WINDOWS Level/Windows Center](/4.png)
+![调窗 DICOM Viewer Adjust   WINDOWS Level/Windows Center](/4.png)
 
 ![移动 DICOM Viewer  Scroll](/5.png)
 
 ![测量工具 DICOM Viewer   Measurement Tools](/6.png)
 
 
-![反色功能 Invert Color](/7.png)
+![反色功能 Invert Color2](/7.png)
 
 ![MPR DICOM MPR Reconstructor](/10.png)
 
-![MP2 DICOM Viewer CrossHair](/11.png)
+![MP2 DICOM Viewer MPR With CrossHair](/11.png)

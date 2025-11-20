@@ -102,7 +102,7 @@ How To Build A Cloud DICOM-WEB Service. Flow Me:
    
 4.  [DICOM-Cloud Part ONE Database-TypeDefines](/posts/3.2-dicom-database-types)
 
-5.  [DICOM-Cloud Part ONE DICOM-Database-Interface](/posts/3.3-DICOM-Database-Interface)
+5.  [DICOM-Cloud Part ONE DICOM-Database-Interface](/posts/3.3-dicom-database-interface)
 
 Use Cornerstone3D to View DICOM Images in a Web Browser.
 

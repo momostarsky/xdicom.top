@@ -94,6 +94,8 @@ MessageBody = {
 4. PgSQL 技能
 
 How To Build A Cloud DICOM-WEB Service. Flow Me:
+** Part One  Database Design and Database Interface **
+
 1.  [how to use fo-dicom construct cstore-scu](/posts/1-how-to-use-fo-dicom-construct-cstore-scu)
    
 2.  [DICOM-Cloud-Prepare](/posts/2-dicom-cloud-prepare)
@@ -103,6 +105,19 @@ How To Build A Cloud DICOM-WEB Service. Flow Me:
 4.  [DICOM-Cloud Part ONE Database-TypeDefines](/posts/3.2-dicom-database-types)
 
 5.  [DICOM-Cloud Part ONE DICOM-Database-Interface](/posts/3.3-dicom-database-interface)
+ 
+
+** Part Tow  Common Function and Configuration Manager for Services Building **
+
+
+1.  [DICOM-Cloud Part Tow 4.1 Common Module Introduce](/posts/4.1-common-index)
+2.  [DICOM-Cloud Part Tow 4.2 storage configuration](/posts/4.2-common-configuration)
+3.  [DICOM-Cloud Part Tow 4.3 database factory](/posts/4.3-common-database)
+4.  [DICOM-Cloud Part Tow 4.4 Redis](/posts/4.4-common-redis)
+4.  [DICOM-Cloud Part Tow 4.4 Kafka Message Publish](/posts/4.5-common-messaging)
+5.  [DICOM-Cloud Part Tow 4.6 Extract Dicom Information](/posts/4.6-common-dicom-processing)
+6.  [DICOM-Cloud Part Tow 4.7 Security](/posts/4.7-common-security)
+6.  [DICOM-Cloud Part Tow 4.8 Write File To Storage](/posts/4.8-common-storage) 
 
 Use Cornerstone3D to View DICOM Images in a Web Browser.
 

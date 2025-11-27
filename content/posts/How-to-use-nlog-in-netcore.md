@@ -4,6 +4,7 @@ description: "利用NLog库來記錄Log.便于调试及查看运行日志"
 date: 2025-11-16T16:17:56+08:00
 keywords: "Fo-DICOM NLog"
 draft: false
+tags: ["DICOM-WEB", "medical imaging", "healthcare cloud", "DICOM storage"]
 ---
 
 # 在 .NET 项目中使用 NLog 记录日志的好处

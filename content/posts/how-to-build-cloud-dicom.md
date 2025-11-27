@@ -6,6 +6,7 @@ description: "如何构建云DICOM-WEB服务."
 draft: false
 weight: 1
 featured: true
+tags: ["DICOM-WEB", "medical imaging", "healthcare cloud", "DICOM storage"]
 ---
 
 如何利用开源项目,构建分布式DICOM-WEB服务.

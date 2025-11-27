@@ -4,6 +4,7 @@ date: 2025-11-19T11:23:56+08:00
 keywords: "DICOM CStoreSCU , medical imaging,healthcare cloud,DICOM storage"
 description: "用FoDICOM构建DICOM CStoreSCU .用于批量发送DICOM文件用于测试和验证"
 draft: false
+tags: ["DICOM-WEB", "medical imaging", "healthcare cloud", "DICOM storage"]
 ---
 
 ### 1-Step How To Use FoDICOM To Construct DICOM CStoreSCU Tool, Batch Send DICOM Files For Testing And Verification

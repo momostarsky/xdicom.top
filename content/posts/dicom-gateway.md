@@ -4,6 +4,7 @@ date: 2025-11-20T09:33:23+08:00
 keywords: "DICOM Gateway, medical imaging,healthcare cloud,DICOM 网关"
 description: "DICOM网关概念, DICOM Gateway具体需要实现那些功能,有哪些开源的DICOM网关可用来参考"
 draft: false
+tags: ["DICOM-WEB", "medical imaging", "healthcare cloud", "DICOM storage"]
 ---
 
 #### DICOM 网关（DICOM Gateway）是一种专门用于在不同医疗信息系统之间转换、路由、适配或处理 DICOM数据流的中间件系统。

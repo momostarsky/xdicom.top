@@ -4,6 +4,7 @@ date: 2025-11-19T15:21:56+08:00
 keywords: "DICOM-WEB , medical imaging,healthcare cloud,DICOM storage"
 description: "构建云DICOM-WEB服务的前期准备工作,主要是数据库,消息队列,缓存,开发语言,服务框架等配置."
 draft: false
+tags: ["DICOM-WEB", "medical imaging", "healthcare cloud", "DICOM storage"]
 ---
 
 本文介绍了一个基于 Rust 语言开发的 DICOM 医疗影像系统架构设计，该系统采用现代化的技术栈，包括 PostgreSQL 作为主索引数据库、Apache Doris 用于日志存储、RedPanda 作为消息队列以及 Redis 作为缓存。系统设计支持单机运行和分布式扩展，充分利用了 Rust 语言的安全性和性能优势。

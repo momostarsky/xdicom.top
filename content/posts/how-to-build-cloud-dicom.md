@@ -118,7 +118,9 @@ How To Build A Cloud DICOM-WEB Service. Flow Me:
 4.  [DICOM-Cloud Part Tow 4.4 Kafka Message Publish](/posts/4.5-common-messaging)
 5.  [DICOM-Cloud Part Tow 4.6 Extract Dicom Information](/posts/4.6-common-dicom-processing)
 6.  [DICOM-Cloud Part Tow 4.7 Security](/posts/4.7-common-security)
-6.  [DICOM-Cloud Part Tow 4.8 Write File To Storage](/posts/4.8-common-storage) 
+7.  [DICOM-Cloud Part Tow 4.8 Write File To Storage](/posts/4.8-common-storage) 
+8.  [DICOM-Cloud Part Tow 5.1 wado-storescp-implemention](/posts/5.1-wado-storescp-implemention) 
+8.  [DICOM-Cloud Part Tow 6.1 wado-consumer service](/posts/6.1-wado-consumer) 
 
 Use Cornerstone3D to View DICOM Images in a Web Browser.
 

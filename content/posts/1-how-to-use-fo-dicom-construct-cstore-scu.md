@@ -1,29 +1,34 @@
 ---
-title: "如何用FoDICOM构建DICOM CStoreSCU 工具,批量发送DICOM文件"
+title: "How to Use fo-dicom to Build DICOM C-Store SCU Tool for Batch Sending DICOM Files"
 date: 2025-11-19T11:23:56+08:00
-keywords: "DICOM CStoreSCU , medical imaging,healthcare cloud,DICOM storage"
-description: "用FoDICOM构建DICOM CStoreSCU .用于批量发送DICOM文件用于测试和验证"
+keywords: "DICOM C-Store SCU, medical imaging, healthcare cloud, DICOM storage, fo-dicom, DICOM C-Store client, medical imaging software"
+description: "Learn how to use fo-dicom to build a DICOM C-Store SCU tool for batch sending DICOM files. Complete guide for testing and validation of medical imaging systems."
 draft: false
-tags: ["DICOM-WEB", "medical imaging", "healthcare cloud", "DICOM storage"]
+tags: ["DICOM", "medical imaging", "healthcare cloud", "DICOM storage", "fo-dicom", "C-Store SCU"]
+categories: ["Medical Imaging", "DICOM Development", "Healthcare Technology"]
+slug: "how-to-use-fo-dicom-build-dicom-cstore-scu-batch-send"
 ---
 
-### 1-Step How To Use FoDICOM To Construct DICOM CStoreSCU Tool, Batch Send DICOM Files For Testing And Verification
+## How to Use fo-dicom to Build DICOM C-Store SCU Tool for Batch Sending DICOM Files
 
-FoDICOM is a powerful open-source DICOM library written in C#. It provides a wide range of features for working with DICOM data, including support for reading, writing, and manipulating DICOM files. In this tutorial, we will use FoDICOM to construct a DICOM CStoreSCU tool, which can be used to batch send DICOM files for testing and verification purposes.
+Building a DICOM C-Store SCU (Service Class User) tool is essential for medical imaging applications that require sending DICOM files to storage systems. This tutorial will guide you through creating a robust batch DICOM file sender using fo-dicom, a powerful open-source DICOM library written in C#.
 
-You can install FoDICOM using NuGet Package Manager in Visual Studio. Here is the command to install it:
- 
+Fo-DICOM provides comprehensive features for working with DICOM data, including support for reading, writing, and manipulating DICOM files. This guide demonstrates how to create a DICOM C-Store SCU tool capable of batch sending DICOM files for testing and verification purposes in medical imaging environments.
+
+### Installing fo-dicom Dependencies
+
+To begin, install the required fo-dicom packages using NuGet Package Manager in Visual Studio:
+
 ```bash
 dotnet add package fo-dicom             
 dotnet add package fo-dicom.Codecs
 dotnet add package fo-dicom.Imaging.ImageSharp
 ```
 
+These packages provide the core DICOM functionality, codec support, and imaging capabilities needed for our C-Store SCU tool.
 
-Now ,let's create a new console application. 
-
-1. Add  NLog.config file.
-
+### Setting Up Logging with NLog
+First, create an NLog.config file to manage application logging:
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 
@@ -33,9 +38,9 @@ Now ,let's create a new console application.
       internalLogLevel="Info"
       internalLogFile=".\internal-nlog.txt">
 
-    <!-- 定义日志输出的 target -->
+    <!-- Define log output targets -->
     <targets>
-        <!-- 输出到文件，按大小滚动 -->
+        <!-- File output with size-based rolling -->
         <target name="logfile"
                 xsi:type="File"
                 fileName="logs/logfile.log"
@@ -47,7 +52,7 @@ Now ,let's create a new console application.
                 keepFileOpen="false"
                 concurrentWrites="true"
                 enableFileDelete="true" />
-        <!-- 输出到文件，按大小滚动 -->
+        <!-- Error file output -->
         <target name="errorFile"
                 xsi:type="File"
                 fileName="logs/error.log"
@@ -63,27 +68,25 @@ Now ,let's create a new console application.
         <target name="console"
                 xsi:type="ColoredConsole"
                 layout="${longdate}|${level:uppercase=true}|${logger}|${message} ${exception:format=tostring}">
-            <!-- 为不同日志级别配置不同颜色 -->
+            <!-- Configure different colors for different log levels -->
             <highlight-row condition="level == LogLevel.Debug" foregroundColor="DarkGray" />
             <highlight-row condition="level == LogLevel.Info" foregroundColor="Gray" />
             <highlight-row condition="level == LogLevel.Warn" foregroundColor="Yellow" />
             <highlight-row condition="level == LogLevel.Error" foregroundColor="Red" />
             <highlight-row condition="level == LogLevel.Fatal" foregroundColor="Red" backgroundColor="White" />
-
         </target>
     </targets>
 
     <rules>
-        <!-- 规则：所有日志都输出到 logfile -->
+        <!-- Rules: all logs to logfile -->
         <logger name="*" minlevel="Info" writeTo="logfile" />
         <logger name="*" minlevel="Debug" writeTo="console" />
         <logger name="*" minlevel="Error" writeTo="errorFile" />
     </rules>
 </nlog>
 ```
-
-
-2. Add appsettings.json or change default log level in appsettings.json.
+### Configuring Application Settings
+Create an appsettings.json file to manage application configuration:
 ```json
 {
   "Logging": {
@@ -96,8 +99,8 @@ Now ,let's create a new console application.
 }
 ```
 
-3. Add DcmSender.cs file.
-
+### Creating the DICOM Sender Class
+Create a DcmSender.cs file containing the core sending logic:
 ```csharp
 using FellowOakDicom;
 using FellowOakDicom.Network;
@@ -125,13 +128,14 @@ public class DcmSender
             return;
         }
 
-        // 获取目录下所有DICOM文件
+        // Get all DICOM files in the directory
         var dicomFiles = GetDicomFiles(dir);
         _logger.Info($"Found Files Count: {dicomFiles.Count} ");
 
-        // 分批处理文件
+        // Create batches of files
         var batches = CreateBatches(dicomFiles, BatchSize);
-        // 使用多线程发送文件
+        
+        // Send files using multiple threads
         var tasks = new List<Task>();
         var ge = batches.GetEnumerator();
         while (ge.MoveNext())
@@ -144,13 +148,13 @@ public class DcmSender
 
             tasks.Add(task);
 
-            // 控制并发线程数
+            // Control concurrent thread count
             if (tasks.Count < Threads) continue;
             await Task.WhenAny(tasks);
             tasks.RemoveAll(t => t.IsCompleted);
         }
 
-        // 等待所有任务完成
+        // Wait for all tasks to complete
         await Task.WhenAll(tasks);
     }
 
@@ -167,7 +171,7 @@ public class DcmSender
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, $"occurs error when enumerate files in directory: {directory} ");
+            _logger.Error(ex, $"Error occurred when enumerating files in directory: {directory} ");
         }
 
         return files;
@@ -188,37 +192,38 @@ public class DcmSender
     {
         try
         {
-            _logger.Debug($"begning send files: {filePath}");
+            _logger.Debug($"Beginning to send files: {string.Join(", ", filePath)}");
             var client = DicomClientFactory.Create(Ip, Port, false, MyAet, Aet);
             client.NegotiateAsyncOps();
-            //when StoreSCP use DICOM-rs implementation. 
+            // When StoreSCP uses DICOM-rs implementation
             client.ServiceOptions.MaxPDULength = 16384;
             foreach (var file in filePath)
             {
                 var dicomFile = await DicomFile.OpenAsync(file);
                 var request = new DicomCStoreRequest(dicomFile);
-                // you can add your own tag 
+                // You can add your own tags
                 request.Command.Add(DicomVR.LO, new DicomTag(0x1211, 0x0001), "xdicom.com-dicomgate-2026");
                 request.Command.Add(DicomVR.LO, new DicomTag(0x1211, 0x1217), "1234567890");
                 request.OnResponseReceived += (_, args) =>
                 {
-                    _logger.Info($"received response status: {args.Status}");
+                    _logger.Info($"Received response status: {args.Status}");
                 };
                 await client.AddRequestAsync(request);
             }
 
             await client.SendAsync(CancellationToken);
-            _logger.Info($"send files success: {filePath}");
+            _logger.Info($"Successfully sent files: {string.Join(", ", filePath)}");
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, $"some error when send files: {filePath} ");
+            _logger.Error(ex, $"Error occurred when sending files: {string.Join(", ", filePath)} ");
         }
     }
 }
 ```
 
-4. Modify Program.cs file.
+### Implementing the Main Program
+Modify your Program.cs file to include command-line interface functionality:
 ```csharp
 using FellowOakDicom;
 using NLog;
@@ -245,21 +250,21 @@ struct SenderDefaultOptions
 
 class Program
 {
-    // 获取当前类日志记录器
+    // Get logger for current class
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
     private static readonly SenderDefaultOptions DefaultOptions = new SenderDefaultOptions();
 
     static async Task Main(string[] args)
     {
-        // 在 DicomSetupBuilder 之前添加
+        // Register encoding provider before DicomSetupBuilder
         System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
         var rootCommand = new RootCommand(description: "DICOM Batch Sending Tool");
         
         Option<string> hostOption = new("--host", "-h")
         {
-            Description = "Store-SCP Server  IP Address.",
+            Description = "Store-SCP Server IP Address.",
             DefaultValueFactory = _ => DefaultOptions.DefaultHost,
         };
         Option<int> portOption = new("--port", "-P")
@@ -274,23 +279,23 @@ class Program
         };
         Option<string> myOption = new("--myaet")
         {
-            Description = "Store-SCP Server  IP Address.",
+            Description = "Local AeTitle.",
             DefaultValueFactory = _ => DefaultOptions.DefaultMyAet,
         };
         Option<int> batchSizeOption = new("--batch-size")
         {
-            Description = "How Many Files Send Per Connection.",
+            Description = "How many files to send per connection.",
             DefaultValueFactory = _ => DefaultOptions.DefaultBatchSize,
         };
         Option<int> threadsOption = new("--threads", "-t")
         {
-            Description = "How Much Max Threads to Run",
+            Description = "Maximum number of threads to run.",
             DefaultValueFactory = _ => DefaultOptions.DefaultThreads,
         };
 
         Option<string> dirsOption = new("--files")
         {
-            Description = "Send DICOM Files Directory.",
+            Description = "Directory containing DICOM files to send.",
             DefaultValueFactory = _ => DefaultOptions.DefaultDirs,
         };
         rootCommand.Add(hostOption);
@@ -313,7 +318,7 @@ class Program
 
                 Console.WriteLine("\nUsage:");
                 Console.WriteLine("DcmBatchSender [Option]");
-                Console.WriteLine("\noption:");
+                Console.WriteLine("\nOptions:");
                 Console.WriteLine(
                     $"  --host, -h <host>         Store-SCP Server IP Address. Default: {DefaultOptions.DefaultHost}");
                 Console.WriteLine(
@@ -322,7 +327,7 @@ class Program
                     $"  --aet <aet>               Store-SCP Server AeTitle. Default: {DefaultOptions.DefaultAet}");
                 Console.WriteLine($"  --myaet <myaet>           Local AeTitle. Default: {DefaultOptions.DefaultMyAet}");
                 Console.WriteLine(
-                    $"  --batch-size <batch-size> Files Send Per Connection. Default: {DefaultOptions.DefaultBatchSize}");
+                    $"  --batch-size <batch-size> Files to send per connection. Default: {DefaultOptions.DefaultBatchSize}");
                 Console.WriteLine($"  --threads, -t <threads>   Max Threads. Default: {DefaultOptions.DefaultThreads}");
                 Console.WriteLine(
                     $"  --files <files>           DICOM Files Directory. Default: {DefaultOptions.DefaultDirs}");
@@ -350,11 +355,11 @@ class Program
         string ip, int port, string aet, string myaet,
         int batchSize, int threads, string dir, int timeout)
     {
-        // 创建 CancellationTokenSource 来处理 Ctrl+C 信号
+        // Create CancellationTokenSource to handle Ctrl+C signals
         var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        Console.CancelKeyPress += (_, e) =>
+        Console.CancelKeyPress += (_, e)
         {
-            e.Cancel = true; // 阻止程序立即退出 
+            e.Cancel = true; // Prevent immediate program exit
             Logger.Info("Received Ctrl+C signal, application will shut down gracefully...");
             cancellationTokenSource.Cancel();
         };
@@ -368,7 +373,7 @@ class Program
                 .SkipValidation()
                 .Build();
 
-            // 确保日志目录存在
+            // Ensure log directories exist
             var logDir = Path.Combine(AppContext.BaseDirectory, "logs");
             var archivedDir = Path.Combine(logDir, "archived");
 
@@ -378,15 +383,8 @@ class Program
             if (!Directory.Exists(archivedDir))
                 Directory.CreateDirectory(archivedDir);
 
-            Logger.Info("🚀 Application Started，NLog configuration is oK！");
+            Logger.Info("🚀 Application Started, NLog configuration is OK！");
 
-            // 创建配置构建器来读取 appsettings.json
-            // var configuration = new ConfigurationBuilder()
-            //     .SetBasePath(AppContext.BaseDirectory)
-            //     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            //     .Build();
-
-            // 在这里使用 updatedConfig 进行后续操作
             Logger.Info(
                 $"Configuration: IP={ip}, Port={port}, AET={aet}, MyAET={myaet}, BatchSize={batchSize}, Threads={threads}, Timeout={timeout}");
 
@@ -401,30 +399,29 @@ class Program
                 Threads = threads,
             };
             await dcmSender.Start(dir);
-            // 应用程序主要逻辑应该在这里执行 
         }
         catch (OperationCanceledException)
         {
-            // 正常的取消操作，不需要记录错误
+            // Normal cancellation, no need to log error
             Logger.Info("Application is shutting down...");
         }
         catch (Exception ex)
         {
-            // 记录内部异常到 NLog（如果配置了 internalLogFile 也会记录 NLog 自己的错误）
             Logger.Error(ex, "Application Crashed !");
             throw;
         }
         finally
         {
-            // 确保所有日志都写入磁盘并关闭资源
+            // Ensure all logs are written to disk and resources are closed
             LogManager.Shutdown();
         }
     }
 }
 ```
 
-5. The final csproj file:
-```The csproj file:
+### Project Configuration
+Here's the final .csproj file:
+```xml
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
@@ -434,7 +431,7 @@ class Program
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <!-- 显式提升版本，解决降级警告 -->
+        <!-- Explicitly upgrade versions to resolve downgrade warnings -->
         <PackageReference Include="StackExchange.Redis" Version="2.9.32" />
         <PackageReference Include="System.CommandLine" Version="2.0.0-rc.1.25451.107" />
         <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
@@ -456,15 +453,18 @@ class Program
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup> 
-</Project> 
+</Project>
 ```
 
+###  Key Features and Notes
+-   The project targets .NET 8.0, as indicated by <TargetFramework>net8.0</TargetFramework> in the csproj file.
+-   The project uses NLog for comprehensive logging. Install NLog and NLog.Extensions.Logging packages to use it.
+-   client.ServiceOptions.MaxPDULength = 16384; sets the maximum length of the PDU (Protocol Data Unit) to 16384 bytes for optimal performance.
+-   The application supports concurrent file sending with configurable thread count and batch size.
+-   Command-line interface allows flexible configuration of DICOM server parameters.
+###  Next Steps
+After implementing this C-Store SCU client, you'll need to create a C-Store SCP (Service Class Provider) to receive DICOM files. This completes the DICOM communication cycle for medical imaging systems.
 
-Note: 
--    The project target is net 8.0 ,you can find    <TargetFramework>net8.0</TargetFramework> in the csproj file.
--    The project uses NLog for logging. You need to install NLog and NLog.Extensions.Logging packages to use it.
--    client.ServiceOptions.MaxPDULength = 16384;  This line sets the maximum length of the PDU (Protocol Data Unit) to 16384 bytes.
-  
-OK, Next  Step is to create a CStoreSCP Provider to receive DICOM files from the CStoreSCP Client.
+For more information about building cloud-based DICOM platforms, see our guide on how to build cloud DICOM systems.
 
-GoTo  Summary  : [how-to-build-cloud-dicom](/posts/how-to-build-cloud-dicom)
+This guide provides a complete implementation of a DICOM C-Store SCU tool using fo-dicom, suitable for testing and validating medical imaging systems. The batch sending capability makes it ideal for large-scale DICOM file transfers in healthcare environments.

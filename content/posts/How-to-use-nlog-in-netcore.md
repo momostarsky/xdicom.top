@@ -1,77 +1,78 @@
 ---
-title: "DOTNET CORE使用NLOG"
-description: "利用NLog库來記錄Log.便于调试及查看运行日志"
+title: "How to Use NLog in .NET Core"
+description: "Leverage the NLog library to record logs for easier debugging and viewing of runtime logs in .NET applications"
 date: 2025-11-16T16:17:56+08:00
-keywords: "Fo-DICOM NLog"
+keywords: "NLog .NET Core logging framework structured-logging cross-platform"
 draft: false
-tags: ["DICOM-WEB", "medical imaging", "healthcare cloud", "DICOM storage"]
+tags: ["logging", "dotnet-core", "application-monitoring", "structured-logging"]
 ---
 
-# 在 .NET 项目中使用 NLog 记录日志的好处
+## Benefits of Using NLog for Logging in .NET Projects
 
-NLog 是一个功能强大、灵活且高性能的日志记录框架，广泛应用于 .NET（包括 .NET Framework、.NET Core 和 .NET 5/6/7/8+）应用程序中。在 .NET 项目中集成 NLog 可显著提升系统的可观测性、可维护性和调试效率。以下是使用 NLog 的主要优势说明。
-
----
-
-## 一、核心优势
-
-### 1. **高性能与低开销**
-- NLog 经过高度优化，采用异步写入、缓冲和批处理机制，对应用程序性能影响极小。
-- 支持异步日志（`async="true"`），避免 I/O 阻塞主线程。
-
-### 2. **灵活的配置方式**
-- 支持通过 **XML 配置文件**（如 `nlog.config`）进行外部化配置，无需重新编译代码即可调整日志行为。
-- 也支持 **代码方式配置**，适用于动态场景或云原生环境。
-
-### 3. **丰富的输出目标（Targets）**
-NLog 支持将日志同时写入多种目标，包括：
-- 文件（按日期/大小自动滚动）
-- 控制台
-- 数据库（SQL Server、PostgreSQL 等）
-- Windows 事件日志
-- Elasticsearch、Graylog、Seq 等日志聚合平台
-- 电子邮件、HTTP 端点、消息队列等
-
-### 4. **强大的日志过滤与路由**
-- 可基于日志级别（Trace、Debug、Info、Warn、Error、Fatal）、日志来源（Logger 名称）、自定义条件进行精细路由。
-- 支持“规则链”（Rules），实现复杂的日志分发逻辑。
-
-### 5. **结构化日志支持**
-- 原生支持结构化日志（Structured Logging），便于与现代日志分析工具（如 Serilog + Seq、ELK）集成。
-- 使用 `${message}`、`${event-properties:item=...}` 等布局渲染器提取结构化字段。
-
-### 6. **自动日志文件管理**
-- 内置日志文件归档策略：按时间（每日/每小时）、按大小（如 10MB）自动分割。
-- 可配置最大保留文件数或总大小，防止磁盘爆满。
-
-### 7. **跨平台兼容性**
-- 完全支持 .NET Standard，可在 Windows、Linux、macOS 上运行。
-- 适用于 ASP.NET Core、WPF、WinForms、控制台应用、Azure Functions、MAUI 等各类 .NET 项目。
-
-### 8. **活跃的社区与持续维护**
-- 开源（MIT 许可）、文档完善、更新频繁，拥有庞大的用户社区和丰富的插件生态。
+NLog is a powerful, flexible, and high-performance logging framework widely used in .NET applications (including .NET Framework, .NET Core, and .NET 5/6/7/8+). Integrating NLog into .NET projects can significantly enhance system observability, maintainability, and debugging efficiency. Here are the main advantages of using NLog.
 
 ---
 
-## 二、典型应用场景
+## I. Core Advantages
 
-| 场景 | NLog 优势体现 |
-|------|----------------|
-| **生产环境监控** | 异步写入 + 文件滚动 + 错误日志高亮，保障系统稳定 |
-| **微服务调试** | 结构化日志 + TraceID 关联，便于分布式追踪 |
-| **合规审计** | 日志内容加密、防篡改配置、长期归档支持 |
-| **开发阶段快速定位问题** | 控制台实时输出 + 详细 Debug 信息 |
+### 1. **High Performance with Low Overhead**
+- NLog is highly optimized, utilizing asynchronous writing, buffering, and batch processing mechanisms that have minimal impact on application performance.
+- Supports asynchronous logging (`async="true"`) to prevent I/O from blocking the main thread.
+
+### 2. **Flexible Configuration Options**
+- Supports externalized configuration through **XML configuration files** (like `nlog.config`), allowing adjustments to logging behavior without recompiling code.
+- Also supports **code-based configuration** for dynamic scenarios or cloud-native environments.
+
+### 3. **Rich Output Targets**
+NLog supports writing logs to multiple targets simultaneously, including:
+- Files (with automatic rolling by date/size)
+- Console
+- Databases (SQL Server, PostgreSQL, etc.)
+- Windows Event Log
+- Logging aggregation platforms like Elasticsearch, Graylog, and Seq
+- Email, HTTP endpoints, message queues, and more
+
+### 4. **Powerful Log Filtering and Routing**
+- Can route logs based on log level (Trace, Debug, Info, Warn, Error, Fatal), source (Logger name), and custom conditions with fine-grained control.
+- Supports "rule chains" for implementing complex log distribution logic.
+
+### 5. **Structured Logging Support**
+- Native support for structured logging, making integration with modern log analysis tools (like Serilog + Seq, ELK) seamless.
+- Uses layout renderers like `${message}`, `${event-properties:item=...}` to extract structured fields.
+
+### 6. **Automatic Log File Management**
+- Built-in log file archiving strategies: by time (daily/hourly) or by size (e.g., 10MB) with automatic splitting.
+- Configurable maximum number of retained files or total size to prevent disk overflow.
+
+### 7. **Cross-Platform Compatibility**
+- Fully supports .NET Standard, running on Windows, Linux, and macOS.
+- Suitable for various .NET projects including ASP.NET Core, WPF, WinForms, console applications, Azure Functions, and MAUI.
+
+### 8. **Active Community and Ongoing Maintenance**
+- Open source (MIT license), well-documented, frequently updated, with a large user community and rich plugin ecosystem.
 
 ---
 
-## 三、简单示例
+## II. Typical Use Cases
 
-### 1. 安装 NuGet 包
+| Scenario | NLog Advantage |
+|----------|----------------|
+| **Production Environment Monitoring** | Asynchronous writing + file rolling + error log highlighting ensures system stability |
+| **Microservice Debugging** | Structured logging + TraceID correlation enables distributed tracing |
+| **Compliance Auditing** | Log content encryption, tamper-proof configuration, and long-term archiving support |
+| **Development Phase Issue Resolution** | Real-time console output + detailed debug information |
+
+---
+
+## III. Simple Implementation Example
+
+### 1. Install NuGet Packages
 ```bash
 dotnet add package NLog
-dotnet add package NLog.Web.AspNetCore  # ASP.NET Core 项目推荐
+dotnet add package NLog.Web.AspNetCore  # Recommended for ASP.NET Core projects
 ```
-## 2. 创建配置文件 `nlog.config`
+
+### 2. Create Configuration File `nlog.config`
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 
@@ -81,9 +82,9 @@ dotnet add package NLog.Web.AspNetCore  # ASP.NET Core 项目推荐
       internalLogLevel="Info"
       internalLogFile=".\internal-nlog.txt">
 
-    <!-- 定义日志输出的 target -->
+    <!-- Define log output targets -->
     <targets>
-        <!-- 输出到文件，按大小滚动 -->
+        <!-- Output to file with size-based rolling -->
         <target name="logfile"
                 xsi:type="File"
                 fileName="logs/logfile.log"
@@ -95,7 +96,8 @@ dotnet add package NLog.Web.AspNetCore  # ASP.NET Core 项目推荐
                 keepFileOpen="false"
                 concurrentWrites="true"
                 enableFileDelete="true" />
-        <!-- 输出到文件，按大小滚动 -->
+                
+        <!-- Output to file for errors with size-based rolling -->
         <target name="errorFile"
                 xsi:type="File"
                 fileName="logs/error.log"
@@ -111,7 +113,7 @@ dotnet add package NLog.Web.AspNetCore  # ASP.NET Core 项目推荐
         <target name="console"
                 xsi:type="ColoredConsole"
                 layout="${longdate}|${level:uppercase=true}|${logger}|${message} ${exception:format=tostring}">
-            <!-- 为不同日志级别配置不同颜色 -->
+            <!-- Configure different colors for different log levels -->
             <highlight-row condition="level == LogLevel.Debug" foregroundColor="DarkGray" />
             <highlight-row condition="level == LogLevel.Info" foregroundColor="Gray" />
             <highlight-row condition="level == LogLevel.Warn" foregroundColor="Yellow" />
@@ -122,7 +124,7 @@ dotnet add package NLog.Web.AspNetCore  # ASP.NET Core 项目推荐
     </targets>
 
     <rules>
-        <!-- 规则：所有日志都输出到 logfile -->
+        <!-- Rule: All logs output to logfile -->
         <logger name="*" minlevel="Info" writeTo="logfile" />
         <logger name="*" minlevel="Debug" writeTo="console" />
         <logger name="*" minlevel="Error" writeTo="errorFile" />
@@ -130,43 +132,44 @@ dotnet add package NLog.Web.AspNetCore  # ASP.NET Core 项目推荐
 </nlog>
 ```
 
-## 3. 使用NLog
+### 3. Using NLog in Your Application
 
 ```csharp
-
-using FellowOakDicom;
 using Microsoft.Extensions.Configuration;
 using NLog;
 
-namespace change_ts;
+namespace YourApplication;
 
 internal class Program
 {
-    // 获取当前类日志记录器
+    // Get logger instance for current class
     private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
     static async Task Main()
     {
-        // 在 DicomSetupBuilder 之前添加
+        // Add this before DicomSetupBuilder if using DICOM
         System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance); 
-        // 创建 CancellationTokenSource 来处理 Ctrl+C 信号
+        
+        // Create CancellationTokenSource to handle Ctrl+C signals
         var cancellationTokenSource = new CancellationTokenSource();
         Console.CancelKeyPress += (_, e) =>
         {
-            e.Cancel = true; // 阻止程序立即退出
-            Logger.Info("收到 Ctrl+C 信号，正在优雅关闭...");
+            e.Cancel = true; // Prevent immediate program exit
+            Logger.Info("Ctrl+C signal received, gracefully shutting down...");
             cancellationTokenSource.Cancel();
         };
+        
         try
         {
-            new DicomSetupBuilder()
-                .RegisterServices(s =>
-                    s.AddFellowOakDicom()
-                        .AddTranscoderManager<FellowOakDicom.Imaging.NativeCodec.NativeTranscoderManager>())
-                .SkipValidation()
-                .Build();
+            // Register DICOM services if needed
+            // new DicomSetupBuilder()
+            //     .RegisterServices(s =>
+            //         s.AddFellowOakDicom()
+            //             .AddTranscoderManager<FellowOakDicom.Imaging.NativeCodec.NativeTranscoderManager>())
+            //     .SkipValidation()
+            //     .Build();
 
-            // 确保日志目录存在
+            // Ensure log directories exist
             var logDir = Path.Combine(AppContext.BaseDirectory, "logs");
             var archivedDir = Path.Combine(logDir, "archived");
 
@@ -176,40 +179,65 @@ internal class Program
             if (!Directory.Exists(archivedDir))
                 Directory.CreateDirectory(archivedDir);
 
-            Logger.Info("🚀 应用程序启动，NLog 日志配置成功！");
+            Logger.Info("🚀 Application started, NLog logging configured successfully!");
 
-            // 创建配置构建器来读取 appsettings.json
+            // Create configuration builder to read appsettings.json
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(AppContext.BaseDirectory)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .Build(); 
 
-            Console.WriteLine("XXXX启动中...");
+            Console.WriteLine("Application starting...");
  
-            Logger.Info("XXXX已启动，服务正在运行中... 按 Ctrl+C 退出");
+            Logger.Info("Application running... Press Ctrl+C to exit");
 
-            // 等待取消信号
+            // Wait for cancellation signal
             await Task.Delay(Timeout.Infinite, cancellationTokenSource.Token);
         }
         catch (OperationCanceledException)
         {
-            // 正常的取消操作，不需要记录错误
-            Logger.Info("应用程序正在关闭...");
+            // Normal cancellation, no need to log as error
+            Logger.Info("Application is shutting down...");
         }
         catch (Exception ex)
         {
-            // 记录内部异常到 NLog（如果配置了 internalLogFile 也会记录 NLog 自己的错误）
-            Logger.Error(ex, "程序因异常停止");
+            // Log internal exception to NLog (if internalLogFile is configured, NLog's own errors will also be recorded)
+            Logger.Error(ex, "Application stopped due to exception");
             throw;
         }
         finally
         { 
-            // 确保所有日志都写入磁盘并关闭资源
+            // Ensure all logs are written to disk and resources are closed
             LogManager.Shutdown();
         }
     }
 }
-
 ```
 
-运行程序时，NLog 会自动创建日志目录和文件，并记录应用程序的启动和运行信息。当程序接收到 Ctrl+C 信号时，NLog 会记录应用程序正在关闭的信息。如果程序因为异常而停止，NLog 会记录异常信息。
+When running the application, NLog will automatically create log directories and files, recording application startup and runtime information. When the program receives a Ctrl+C signal, NLog will log information about the application shutting down. If the program stops due to an exception, NLog will record the exception information.
+
+---
+
+## IV. Best Practices for NLog Implementation
+
+### 1. **Performance Optimization**
+- Use async targets to prevent blocking
+- Configure appropriate log levels in production
+- Implement log file rotation to manage disk space
+
+### 2. **Security Considerations**
+- Avoid logging sensitive information like passwords or personal data
+- Implement log file access controls
+- Consider log encryption for sensitive environments
+
+### 3. **Monitoring and Alerting**
+- Set up log monitoring for critical error patterns
+- Implement structured logging for better searchability
+- Configure appropriate log retention policies
+
+### 4. **Development vs Production Configurations**
+- Use more verbose logging in development
+- Optimize for performance in production
+- Different log formats and targets based on environment
+
+By following these practices, you can effectively implement NLog in your .NET applications to create a robust logging system that supports debugging, monitoring, and operational excellence.

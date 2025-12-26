@@ -1,116 +1,129 @@
 ---
-title: "DICOM文件中核心Infomation 结构及说明"
+title: "DICOM Core Information Structure and Explanation: Understanding Medical Imaging Standards"
 date: 2025-11-14T16:17:56+08:00
-description: "DICOM文件中核心对象模型结构及说明"
-keywords: "DICOM PACS"
+description: "Core object model structure and explanation in DICOM files"
+keywords: "DICOM PACS, medical imaging, healthcare standards, DICOM file structure, medical imaging data"
 draft: false
-tags: ["DICOM-WEB", "medical imaging", "healthcare cloud", "DICOM storage"]
+tags: ["DICOM-WEB", "medical imaging", "healthcare cloud", "DICOM storage", "medical imaging standards"]
 ---
 
-# DICOM基础概念
+# DICOM Basic Concepts
 
-DICOM（Digital Imaging and Communications in Medicine）是医学影像及其相关信息的国际标准（ISO 12052），用于存储、交换和传输医学图像及相关数据。DICOM 文件不仅包含像素数据（即图像本身），还包含大量描述该图像的元数据，这些元数据以“数据元素”（Data Elements）的形式组织在“信息对象定义”（Information Object Definition, IOD）中。
+DICOM (Digital Imaging and Communications in Medicine) is the international standard (ISO 12052) for medical imaging and related information, used for storing, exchanging, and transmitting medical images and related data. DICOM files not only contain pixel data (the image itself) but also contain extensive metadata describing the image, organized as "data elements" within "Information Object Definitions" (IOD).
 
-- ✅ 一、DICOM 文件的核心结构
-  
-  - 文件头（File Meta Information）
-    - 固定长度为 128 字节的前导（通常全为 0x00，可选）
-    - 4 字节的 DICOM 前缀 "DICM"
-    - 文件元信息组（Group 0002），包含：
-      -   (0002,0000) File Meta Information Group Length
-      -   (0002,0001) File Meta Information Version
-      -   (0002,0002) Media Storage SOP Class UID
-      -   (0002,0003) Media Storage SOP Instance UID
-      -   (0002,0010) Transfer Syntax UID
-      -   (0002,0012) Implementation Class UID
-      -   (0002,0013) Implementation Version Name
+## ✅ 1. Core Structure of DICOM Files
 
-  - 数据集（Dataset）
-    - 包含实际的图像信息和元数据，遵循特定的 IOD（如 CT Image IOD、MR Image IOD 等）
-    - 数据元素按标签（Tag）组织，格式为 (gggg,eeee)，其中 gggg 是组号，eeee 是元素号
-    - 每个数据元素包括：Tag、VR（Value Representation）、Value Length、Value
- 
+### File Header (File Meta Information)
+- 128-byte fixed-length preamble (usually all 0x00, optional)
+- 4-byte DICOM prefix "DICM"
+- File meta information group (Group 0002), including:
+  - (0002,0000) File Meta Information Group Length
+  - (0002,0001) File Meta Information Version
+  - (0002,0002) Media Storage SOP Class UID
+  - (0002,0003) Media Storage SOP Instance UID
+  - (0002,0010) Transfer Syntax UID
+  - (0002,0012) Implementation Class UID
+  - (0002,0013) Implementation Version Name
 
- - ✅ 二、核心信息对象（IOD）结构说明
+### Dataset
+- Contains actual image information and metadata, following specific IODs (such as CT Image IOD, MR Image IOD, etc.)
+- Data elements organized by tags, formatted as (gggg,eeee), where gggg is the group number and eeee is the element number
+- Each data element includes: Tag, VR (Value Representation), Value Length, Value
 
-每个 DICOM 图像属于一种 SOP Class（Service-Object Pair Class），例如：
+## ✅ 2. Core Information Object (IOD) Structure Explanation
+
+Each DICOM image belongs to a SOP Class (Service-Object Pair Class), for example:
 
 - CT Image Storage (1.2.840.10008.5.1.4.1.1.2)
 - MR Image Storage (1.2.840.10008.5.1.4.1.1.4)
 - Secondary Capture Image Storage (1.2.840.10008.5.1.4.1.1.7)
 
-每种 SOP Class 对应一个 IOD，定义了必须（Mandatory）或可选（Optional）的数据元素。
+Each SOP Class corresponds to an IOD that defines mandatory or optional data elements.
 
-  **典型 IOD 模块（Modules）包括：**
+### Typical IOD Modules Include:
 
-| 模块名称         | 类型     | 说明                                                       |
-|------------------|----------|------------------------------------------------------------|
-| Patient          | Module   | 患者基本信息（如：姓名、ID、性别、出生日期等）                     |
-| Study            | Module   | 检查（Study）信息（如：Study Instance UID、检查日期/时间、医生等） |
-| Series           | Module   | 序列（Series）信息（如：Series Instance UID、模态、设备等）        |
-| Equipment        | Module   | 设备信息（如：制造商、型号、软件版本等）                           |
-| Image            | Module   | 图像特有信息（如：图像方向、位置、像素间距、窗宽窗位等）           |
-| Pixel Data       | Module   | 像素数据本身  (7fe0,0010)         |          |
+| Module Name | Type | Description |
+|-------------|------|-------------|
+| Patient | Module | Patient basic information (e.g., name, ID, gender, birth date, etc.) |
+| Study | Module | Examination (Study) information (e.g., Study Instance UID, examination date/time, doctor, etc.) |
+| Series | Module | Series information (e.g., Series Instance UID, modality, equipment, etc.) |
+| Equipment | Module | Equipment information (e.g., manufacturer, model, software version, etc.) |
+| Image | Module | Image-specific information (e.g., image orientation, position, pixel spacing, window width/level, etc.) |
+| Pixel Data | Module | Pixel data itself (7fe0,0010) |
 
+## ✅ 3. Key Data Elements Example
 
-- ✅ 三、关键数据元素示例
+| TAG(gggg,eeee) | Name | Description |
+|----------------|------|-------------|
+| (0010,0010) | Patient's Name | Patient name |
+| (0010,0020) | Patient ID | Patient unique identifier |
+| (0010,0030) | Patient's Birth Date | Birth date |
+| (0010,0040) | Patient's Sex | Gender |
+| (0020,000D) | Study Instance UID | Study unique identifier |
+| (0020,000E) | Series Instance UID | Series unique identifier |
+| (0008,0018) | SOP Instance UID | Image instance unique identifier |
+| (0008,0060) | Modality | Imaging modality (CT, MR, US, etc.) |
+| (0008,0020) | Study Date | Study date |
+| (0008,0030) | Study Time | Study time |
+| (0020,0032) | Image Position (Patient) | Image position in patient coordinate system |
+| (0020,0037) | Image Orientation (Patient) | Image orientation (row/column vectors) |
+| (0028,0030) | Pixel Spacing | Physical pixel dimensions (mm) |
+| (0028,0010) | Rows | Image row count |
+| (0028,0011) | Columns | Image column count |
+| (0028,0100) | Bits Allocated | Bits allocated per pixel |
+| (7FE0,0010) | Pixel Data | Actual pixel data (may be compressed) |
 
-| TAG(gggg,eeee) | 名称 |      说明   |
-|---------------|--------------|--------|
-| (0010,0010)  | Patient's Name        | 患者姓名    |
-| (0010,0020)  | Patient ID        | 患者唯一标识      |
-| (0010,0030)  | Patient's Birth Date     | 出生日期  |
-| (0010,0040)  | Patient's Sex          | 性别       |
-| (0020,000D)  | Study Instance UID      | 检查唯一标识符    |
-| (0020,000E)  | Series Instance UID       | 序列唯一标识符    |
-| (0008,0018)  | SOP Instance UID       | 图像实例唯一标识符    |
-| (0008,0060)  | Modality             | 成像模态（CT、MR、US 等）  |
-| (0008,0020)  | Study Date           | 检查日期    |
-| (0008,0030)  | Study Time         | 检查时间  |
-| (0020,0032)  | Image Position (Patient)  | 图像在患者坐标系中的位置       |
-| (0020,0037)  | Image Orientation (Patient)  | 图像方向（行/列向量）   |
-| (0028,0030)  | Pixel Spacing  | 像素物理尺寸（mm）    |
-| (0028,0010)  | Rows    | 图像行数             |
-| (0028,0011)  | Columns      | 图像列数             |
-| (0028,0100)  | Bits Allocated      | 每像素分配的位数      |
-| (7FE0,0010)  | Pixel Data      | 实际像素数据（可能压缩）   |
+## ✅ 4. Transfer Syntax
 
+Determines how data is encoded (byte order, compression, etc.), common ones include:
 
-- ✅ 四、传输语法（Transfer Syntax）
-  
- 决定了数据如何编码（字节序、是否压缩等），常见包括：
+- Implicit VR Little Endian (1.2.840.10008.1.2) — Default
+- Explicit VR Little Endian (1.2.840.10008.1.2.1)
+- JPEG Lossless (1.2.840.10008.1.2.4.70)
+- JPEG 2000 (1.2.840.10008.1.2.4.90)
+- Deflated Explicit VR Little Endian (1.2.840.10008.1.2.1.99)
 
-   - Implicit VR Little Endian (1.2.840.10008.1.2) —— 默认
-   - Explicit VR Little Endian (1.2.840.10008.1.2.1)
-   - JPEG Lossless (1.2.840.10008.1.2.4.70)
-   - JPEG 2000 (1.2.840.10008.1.2.4.90)
-   - Deflated Explicit VR Little Endian (1.2.840.10008.1.2.1.99) 
+## ✅ 5. Summary
 
+DICOM File = File Meta Information + Dataset (following specific IOD)
 
-- ✅ 五、总结
-  
-DICOM 文件 = 文件元信息 + 数据集（遵循特定 IOD）
+Core information is organized in a hierarchical structure: Patient → Study → Series → Image → Pixel Data
+Corresponding TAGs: PatientID → StudyInstanceUID → SeriesInstanceUID → SOPInstanceUID → PixelData.
+In ER models, this is represented as:
+Patient → Study → Series → Image
+1 → N → N → N
 
-核心信息通过分层结构组织：Patient → Study → Series → Image → Pixel Data 对应的TAG为:PatientID → StudyInstanceUID → SeriesInstanceUID → SOPInstanceUID → PixelData.  在ER模型中表示为:
-Patient → Study → Series → Image 
-1      -> N  ---->N  -->N  
-对于多帧图像 NumberOfFrames>1 的需要单独处理。多帧主要是超声,心血管造影,心电图等设备生成到的DICOM文件。
+For multi-frame images where NumberOfFrames > 1, special handling is required. Multi-frame images are primarily generated by ultrasound, cardiovascular angiography, and ECG devices.
 
-所有信息通过标准化标签（Tag）访问，支持跨厂商互操作性。
+All information is accessed through standardized tags, supporting cross-vendor interoperability.
 
-如需解析或生成 DICOM 文件，推荐使用成熟库如：
+### Recommended Libraries for Parsing or Generating DICOM Files:
 
--   Python: pydicom
--   C++: DCMTK
--   Java: dcm4che
--   C#: fo-dicom
--   RUST: dicom-rs
+- **Python**: [pydicom](https://github.com/pydicom/pydicom) - A pure Python package for parsing and handling DICOM files
+- **C++**: [DCMTK](https://github.com/DCMTK/dcmtk) - A collection of libraries and applications implementing large parts of the DICOM standard
+- **Java**: [dcm4che](https://github.com/dcm4che/dcm4che) - A service-oriented architecture for healthcare enterprises
+- **C#**: [fo-dicom](https://github.com/fo-dicom/fo-dicom) - DICOM for .NET, supporting .NET Framework, .NET Core, UWP, Android, iOS, and Unity
+- **Rust**: [dicom-rs](https://github.com/Enet4/dicom-rs) - A DICOM toolkit written in Rust with focus on parsing, writing, and network communication
 
-如果是AI学习大数据分析等,推荐采用Pydicom。 开发PACS系统时，推荐采用
-FO-DICOM。主要是目前dcm4che的兼容性相比fo-dicom差一些。dicom-rs 主要是难度高一些。DCMTK 对于JPEG2000传输语法的解码需要收费。dcm4che 在解析速度上目前是最慢的。但是辅助工具方面dcm4che 反而是最多的。
+For AI learning and big data analytics, pydicom is recommended. For PACS system development, fo-dicom is recommended as it has better compatibility than dcm4che. dicom-rs has a higher learning curve. DCMTK requires payment for JPEG2000 transfer syntax decoding. dcm4che is currently the slowest in parsing speed, but has the most auxiliary tools.
 
-另外涉及到一些调试工具，如：
--   DVTk 
--   Wireshark + DICOM plugin
-  
-对于调试DICOM通讯比较好。
+### Debugging Tools:
+- DVTk
+- Wireshark + DICOM plugin
+
+These are excellent for debugging DICOM communications.
+
+## Key Benefits of DICOM Standards
+
+- **Interoperability**: Enables communication between different medical imaging systems
+- **Standardization**: Consistent format for medical image storage and exchange
+- **Rich Metadata**: Comprehensive patient and image information
+- **Scalability**: Supports various imaging modalities and applications
+
+## Keywords and Descriptions
+
+- **Primary Keywords**: DICOM, medical imaging, healthcare standards, DICOM file structure, medical imaging data
+- **Secondary Keywords**: PACS, medical imaging standards, DICOM IOD, DICOM transfer syntax, healthcare software
+- **Meta Description**: Complete guide to DICOM core information structure, file format, and medical imaging standards for healthcare professionals and developers.
+- **Target Audience**: Healthcare software developers, medical imaging system architects, healthcare IT professionals
+- **Content Value**: Comprehensive overview of DICOM file structure, data elements, and implementation guidelines for medical imaging systems

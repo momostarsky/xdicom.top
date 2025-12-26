@@ -1,63 +1,63 @@
 ---
-title: "如何利用Fo-DICOM库修改DICOM文件的传输语法或是编码格式"
+title: "How to Modify DICOM Transfer Syntax Using Fo-DICOM Library: Encoding Format Conversion Guide"
 date: 2025-11-15T16:17:56+08:00
-keywords: "Fo-DICOM ChangeTransferSyntax"
-description: "利用FODICOM库修改DICOM文件的传输语法或是编码格式,使之用于WebDICOM的呈现或是压缩文件大小以节省网络流量和磁盘空间,特别是对于归档文件."
+description: "Using Fo-DICOM library to modify DICOM file transfer syntax or encoding format for WebDICOM rendering, compressing file size to save network bandwidth and disk space, especially for archived files."
+keywords: "Fo-DICOM, ChangeTransferSyntax, DICOM transfer syntax, medical imaging, DICOM encoding, healthcare software, DICOM compression"
 draft: false
-tags: ["DICOM-WEB", "medical imaging", "healthcare cloud", "DICOM storage"]
+tags: ["DICOM-WEB", "medical imaging", "healthcare cloud", "DICOM storage", "DICOM transfer syntax", "medical imaging processing"]
 ---
 
-# 修改 DICOM 文件传输语法的目的及好处
+# Purpose and Benefits of Modifying DICOM File Transfer Syntax
 
-在医学影像处理与交换过程中，**传输语法（Transfer Syntax）** 是 DICOM 标准中用于定义数据编码方式的关键组成部分。它决定了 DICOM 文件中数据元素的字节序、值表示（VR）是否显式声明，以及像素数据是否经过压缩。因此，**修改 DICOM 文件的传输语法**是一种常见且重要的操作，具有明确的目的和显著的好处。
-
----
-
-## 一、目的
-
-### 1. **兼容性适配**
-不同厂商的 PACS（Picture Archiving and Communication System）、工作站或 DICOM 查看器可能仅支持特定的传输语法。将文件转换为接收方支持的语法，可确保顺利导入与显示。
-
-### 2. **存储优化**
-通过将图像从无压缩格式（如 Implicit VR Little Endian）转换为压缩格式（如 JPEG Lossless 或 JPEG-LS），可大幅减小文件体积，节省存储空间与网络带宽。
-
-### 3. **性能提升**
-某些系统对显式 VR（Explicit VR）格式解析更快；而另一些系统则偏好隐式 VR（Implicit VR）。调整传输语法可优化读取/写入性能。
-
-### 4. **满足归档或传输标准**
-医院或区域医疗信息平台常规定统一的传输语法（如强制使用 Explicit VR Little Endian），以确保数据一致性与长期可读性。
+In medical image processing and exchange, **Transfer Syntax** is a key component of the DICOM standard that defines data encoding methods. It determines the byte order of data elements in DICOM files, whether Value Representation (VR) is explicitly declared, and whether pixel data is compressed. Therefore, **modifying the transfer syntax of DICOM files** is a common and important operation with clear purposes and significant benefits.
 
 ---
 
-## 二、好处
+## 1. Purposes
 
-| 好处类别 | 说明 |
-|----------|------|
-| ✅ **提高互操作性** | 确保 DICOM 文件能在不同厂商设备间无缝交换，避免“无法识别”错误。 |
-| ✅ **节省存储成本** | 使用无损或有损压缩语法（如 JPEG 2000）可减少 50%~90% 的文件大小。 |
-| ✅ **加速网络传输** | 小体积文件在网络上传输更快，尤其适用于远程会诊或云 PACS 场景。 |
-| ✅ **增强系统稳定性** | 避免因不支持的传输语法导致解析失败、崩溃或数据损坏。 |
-| ✅ **符合合规要求** | 满足 HL7、IHE 或国家/地区医疗信息化规范中对数据格式的强制要求。 |
+### 1. **Compatibility Adaptation**
+Different manufacturers' PACS (Picture Archiving and Communication System), workstations, or DICOM viewers may only support specific transfer syntaxes. Converting files to syntaxes supported by the receiving party ensures smooth import and display.
 
----
+### 2. **Storage Optimization**
+By converting images from uncompressed formats (such as Implicit VR Little Endian) to compressed formats (such as JPEG Lossless or JPEG-LS), file size can be dramatically reduced, saving storage space and network bandwidth.
 
-## 三、常见传输语法转换示例
+### 3. **Performance Enhancement**
+Some systems parse explicit VR (Explicit VR) format faster, while others prefer implicit VR (Implicit VR). Adjusting transfer syntax can optimize read/write performance.
 
-| 原始语法 | 目标语法 | 应用场景 |
-|---------|--------|--------|
-| Implicit VR Little Endian (`1.2.840.10008.1.2`) | Explicit VR Little Endian (`1.2.840.10008.1.2.1`) | 提高可读性，便于调试与第三方工具解析 |
-| Explicit VR Little Endian | JPEG Lossless (`1.2.840.10008.1.2.4.70`) | 医院归档，节省存储空间 |
-| JPEG Lossy (`1.2.840.10008.1.2.4.51`) | Implicit VR Little Endian | 解压缩以便进行定量分析（如 CT 值测量） |
-
-> ⚠️ 注意：**有损压缩（如 JPEG Baseline）会丢失原始像素信息，不适用于诊断用途**；无损压缩（如 JPEG-LS、JPEG 2000 Lossless）则可在压缩的同时保留全部诊断信息。
+### 4. **Meeting Archival or Transmission Standards**
+Hospitals or regional medical information platforms often specify unified transfer syntaxes (such as mandatory use of Explicit VR Little Endian) to ensure data consistency and long-term readability.
 
 ---
 
-## 四、实现方式（简要）
+## 2. Benefits
 
-使用开源库Fo-DICOM可轻松修改传输语法：
+| Benefit Category | Description |
+|------------------|-------------|
+| ✅ **Improved Interoperability** | Ensures DICOM files can be seamlessly exchanged between different manufacturer devices, avoiding "unrecognized" errors. |
+| ✅ **Reduced Storage Costs** | Using lossless or lossy compression syntax (such as JPEG 2000) can reduce file size by 50%~90%. |
+| ✅ **Faster Network Transmission** | Smaller files transmit faster over networks, especially suitable for teleconsultation or cloud PACS scenarios. |
+| ✅ **Enhanced System Stability** | Avoids parsing failures, crashes, or data corruption due to unsupported transfer syntaxes. |
+| ✅ **Compliance with Requirements** | Meets mandatory format requirements in HL7, IHE, or national/regional healthcare IT specifications. |
 
-必须增加以下引用
+---
+
+## 3. Common Transfer Syntax Conversion Examples
+
+| Original Syntax | Target Syntax | Application Scenario |
+|-----------------|---------------|----------------------|
+| Implicit VR Little Endian (`1.2.840.10008.1.2`) | Explicit VR Little Endian (`1.2.840.10008.1.2.1`) | Improved readability, easier debugging and parsing by third-party tools |
+| Explicit VR Little Endian | JPEG Lossless (`1.2.840.10008.1.2.4.70`) | Hospital archiving, saving storage space |
+| JPEG Lossy (`1.2.840.10008.1.2.4.51`) | Implicit VR Little Endian | Decompression for quantitative analysis (e.g., CT value measurements) |
+
+> ⚠️ Note: **Lossy compression (such as JPEG Baseline) loses original pixel information and is not suitable for diagnostic purposes**; lossless compression (such as JPEG-LS, JPEG 2000 Lossless) can compress while preserving all diagnostic information.
+
+---
+
+## 4. Implementation Method (Brief)
+
+Using the open-source Fo-DICOM library to easily modify transfer syntax:
+
+You must add the following references:
 
 ```txt
 <PackageReference Include="fo-dicom" Version="5.2.4" />
@@ -65,20 +65,34 @@ tags: ["DICOM-WEB", "medical imaging", "healthcare cloud", "DICOM storage"]
 <PackageReference Include="fo-dicom.Imaging.ImageSharp" Version="5.2.4" />
 ```
 
-实现代码:
+Implementation code:
 ```csharp
-
 using FellowOakDicom;
 using FellowOakDicom.Imaging.Codec;
-DicomFile? cfine = null; // 初始化为null
-// 首次处理
+
+DicomFile? cfine = null; // Initialize as null
+// Initial processing
 var dicomFile = await DicomFile.OpenAsync(filePath);
 cfine = dicomFile.Clone(DicomTransferSyntax.ExplicitVRLittleEndian);
 if (cfine != null)
 {
     await cfine.SaveAsync(dicomObject.FilePath); 
 }
-
 ```
 
-运行以上代码，将原始 DICOM 文件转换为 Explicit VR Little Endian 格式，并保存为指定路径。
+Running the above code converts the original DICOM file to Explicit VR Little Endian format and saves it to the specified path.
+
+## Key Advantages of Transfer Syntax Modification
+
+- **Enhanced Compatibility**: Ensures seamless integration across different medical imaging systems
+- **Optimized Storage**: Significantly reduces storage requirements through compression
+- **Improved Performance**: Faster data transmission and processing
+- **Standard Compliance**: Meets healthcare industry standards and regulations
+
+## Keywords and Descriptions
+
+- **Primary Keywords**: Fo-DICOM, DICOM transfer syntax, medical imaging, DICOM encoding, healthcare software
+- **Secondary Keywords**: DICOM compression, medical imaging processing, DICOM format conversion, healthcare IT
+- **Meta Description**: Complete guide to modifying DICOM transfer syntax using Fo-DICOM library for medical imaging optimization and compatibility.
+- **Target Audience**: Healthcare software developers, medical imaging system architects, DICOM system administrators
+- **Content Value**: Practical implementation guide for DICOM transfer syntax modification with code examples and best practices

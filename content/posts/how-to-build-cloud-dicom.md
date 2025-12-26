@@ -1,76 +1,80 @@
 ---
-title: "如何构建可扩展的云DICOM-WEB服务 | DICOM Cloud"
+title: "How to Build Scalable Cloud DICOM-WEB Services | DICOM Cloud"
 date: 2025-11-19T10:23:56+08:00
-keywords: "DICOM-WEB , medical imaging,healthcare cloud,DICOM storage"
-description: "如何构建云DICOM-WEB服务."
+keywords: "DICOM-WEB, medical imaging, healthcare cloud, DICOM storage, cloud DICOM platform, DICOM services, medical DICOM platform"
+description: "Complete guide to building scalable cloud DICOM-WEB services using open-source projects. Learn architecture, implementation, and deployment strategies for medical imaging platforms."
 draft: false
 weight: 1
 featured: true
-tags: ["DICOM-WEB", "medical imaging", "healthcare cloud", "DICOM storage"]
+tags: ["DICOM-WEB", "medical imaging", "healthcare cloud", "DICOM storage", "cloud DICOM platform"]
+categories: ["Medical Imaging", "DICOM Development", "Healthcare Technology"]
+slug: "how-to-build-scalable-cloud-dicom-web-services"
 ---
 
-如何利用开源项目,构建分布式DICOM-WEB服务.
-### 总体架构
+# How to Build Scalable Cloud DICOM-WEB Services
 
-1. Apache-kafka 作为消息队列.开发阶段可用RedPanda 替代.
-2. Apache-Doris 作为数据仓库.提供DicomStateMeta,DicomImageMeta 及WadoAccessLog 存储,提供查询及统计分析.
-3. PostgreSQL  作为数据库.提供数据存储功能.及检查索引功能.只存储PatientInformation,StudyInformation,SeriesInformation 这一级别的元数据.充分利用关系数据库的ACID特性.后续可用Citus进行扩容.
-4. Redis 作为缓存.提供数据缓存功能.
-5. Nginx 作为反向代理服务器.提供负载均衡,静态文件,TLS透传等
+Learn how to build distributed DICOM-WEB services using open-source projects.
 
-收图文件服务接收的文件,先存储到本地,再通过 kafka 发送到消息队列.
+## Overall Architecture
 
-MessageBody = {
-    TransferSyntax, SopInstancheUID, StudyInstanceUID,SeriesInstanceUID, PatientID, FileName, FileSize, FilePath
+1. **Apache Kafka** as message queue. RedPanda can be used as alternative during development.
+2. **Apache Doris** as data warehouse. Provides storage for DicomStateMeta, DicomImageMeta, and WadoAccessLog, offering query and statistical analysis.
+3. **PostgreSQL** as database. Provides data storage and indexing functions. Stores only patient, study, and series level metadata to fully leverage ACID properties of relational databases. Can be scaled later with Citus.
+4. **Redis** as cache. Provides data caching functionality.
+5. **Nginx** as reverse proxy server. Provides load balancing, static files, and TLS termination.
+
+Files received by the storage service are first stored locally, then sent to the message queue via Kafka.
+
+Message Body = {
+    TransferSyntax, SopInstanceUID, StudyInstanceUID, SeriesInstanceUID, PatientID, FileName, FileSize, FilePath
 }
 
-消息分发到多个队列:
-1. 存储队列: 存储文件信息,文件存储路径,文件大小.
-2. 索引队列: 提取文件TAG信息, 包括PatientInfomation, StudyInformation, SeriesInformation, ImageInformation.并写入Doris库
-3. 转换队列: 对于部分传输语法,因为Cornerstone3D无法解析,需要转换成CornerstoneJS能够解析的格式.转换失败的写入Doris转换记录表.
+Messages are distributed to multiple queues:
+1. **Storage Queue**: Stores file information, file storage path, file size.
+2. **Index Queue**: Extracts file TAG information, including PatientInformation, StudyInformation, SeriesInformation, ImageInformation, and writes to Doris database.
+3. **Conversion Queue**: For some transfer syntaxes that Cornerstone3D cannot parse, convert to formats that CornerstoneJS can parse. Failed conversions are written to Doris conversion record table.
 
-### 服务用途及说明
-| 服务             | 用途                                                                                                                     |  
-|----------------|------------------------------------------------------------------------------------------------------------------------|
-| wado-server    |  DICOM Web WADO-RS API实现,support oauth2.                                                                         | 
-| wado-storescp  | CStoreSCP Provider,write dicom file to disk. and publish message to kafka:storage_queue,log_queue                      |
-| wado-consumer  | consumer storage-queue,and publish message to kafka:dicom_state_queue,dicom_image_queue,use stream_load write to doris |
-| wado-webworker | generate metadata for wado-server and update related instances for series and study.                                   |
+## Service Purposes and Descriptions
 
+| Service | Purpose |
+|---------|---------|
+| wado-server | DICOM Web WADO-RS API implementation, supports OAuth2. |
+| wado-storescp | CStoreSCP Provider, writes DICOM files to disk and publishes messages to Kafka: storage_queue, log_queue |
+| wado-consumer | Consumes storage-queue, and publishes messages to Kafka: dicom_state_queue, dicom_image_queue, uses stream_load to write to Doris |
+| wado-webworker | Generates metadata for wado-server and updates related instances for series and study. |
 
-###  wado-server
+### wado-server
 
-    DICOM Web WADO-RS API 接口实现 ,根据配置选项决定是否开启 OAuth2 认证.
+DICOM Web WADO-RS API implementation, with OAuth2 authentication enabled based on configuration options.
 
 ### wado-storescp
 
-    DICOM CStoreSCP 服务,接收DICOM文件并写入磁盘,同是分发消息到Kafka:  storage_queue,log_queue      
-    - 1.存储文件路径: ${ROOT}/<TenantID>/<StudyInstanceUID>/<SeriesInstanceUID>/<SopInstanceUID>.dcm
-    - 2.往消息队列: storage_queue ,log_queue 发送消息
+DICOM CStoreSCP service that receives DICOM files and writes them to disk, simultaneously distributing messages to Kafka: storage_queue, log_queue
+- 1. Storage file path: ${ROOT}/<TenantID>/<StudyInstanceUID>/<SeriesInstanceUID>/<SopInstanceUID>.dcm
+- 2. Send messages to message queues: storage_queue, log_queue
 
 ### wado-consumer
 
-    消费Kafka消息队列storage_queue ,提取DicomStateMeta 到主数据库,并通过消息队列:dicom_state_queue,dicom_image_queue发布DicomStateMeta,DicomImageMeta 到Doris数据库
-    - 1.从storage-queue读,往dicom_state_queue,dicom_image_queue写
-    - 2.提取DicomStateMeta 到主数据库,
-    - 3.通过消息队列:dicom_state_queue,dicom_image_queue发布DicomStateMeta,DicomImageMeta 到Doris数据库 Stream_Load 模式
-  
+Consumes Kafka message queue storage_queue, extracts DicomStateMeta to main database, and publishes DicomStateMeta and DicomImageMeta to Doris database via message queues: dicom_state_queue, dicom_image_queue
+- 1. Read from storage-queue, write to dicom_state_queue, dicom_image_queue
+- 2. Extract DicomStateMeta to main database
+- 3. Publish DicomStateMeta and DicomImageMeta to Doris database using Stream_Load mode via message queues: dicom_state_queue, dicom_image_queue
+
 ### wado-webworker
 
-    定期扫描数据库,根据最后更新时间生成JSON格式的metadata用于加速WADO-Server的访问
+Periodically scans database and generates JSON-formatted metadata based on last update time to accelerate WADO-Server access
 
+## Summary
 
-## 总结
+Subsequent related subsystem introductions will all revolve around this foundation.
 
-后续的相关子系统的介绍均围绕这里的进行展开.
+***Storage file and metadata paths:***
 
-***存储文件及元数据路径:***
+1. Storage file path: ${ROOT}/TenantID/StudyInstanceUID/SeriesInstanceUID/SopInstanceUID.dcm
+2. StudyMetadata storage path: ${ROOT}/metadata/StudyInstanceUID/SeriesInstanceUID.json
+3. SeriesMetadata storage path: ${ROOT}/metadata/StudyInstanceUID.json
 
-1. 存储文件路径: ${ROOT}/TenantID/StudyInstanceUID/SeriesInstanceUID/SopInstanceUID.dcm
-2. StudyMetadata 存储路径: ${ROOT}/metadata/StudyInstanceUID/SeriesInstanceUID.json
-3. SeriesMetadata 存储路径: ${ROOT}/metadata/StudyInstanceUID.json
-
-***开发过程中需要用到的工具:***
+***Tools needed during development:***
 
 1. [DICOMwebJS](https://github.com/cornerstonejs/dicomweb-client)
 2. [Dcm4che](https://dcm4che.org/)
@@ -78,71 +82,70 @@ MessageBody = {
 4. [DVTk](https://www.dvtk.org)
 5. [DCMTK](https://dcmtk.org/en/dcmtk/dcmtk-tools/)
 6. [fo-dicom](https://github.com/fo-dicom/fo-dicom)
-6. [Cornerstone3D](https://www.cornerstonejs.org/)
-6. [MicroDicom  DICOM Viewer](https://www.microdicom.com/)
-7. [RadiAnt DICOM Viewer](https://www.redant.com/)
+7. [Cornerstone3D](https://www.cornerstonejs.org/)
+8. [MicroDicom DICOM Viewer](https://www.microdicom.com/)
+9. [RadiAnt DICOM Viewer](https://www.radiantviewer.com/)
 
-
-***当然别忘了最重要的DICOM标准:*** 
+***Of course, don't forget the most important DICOM standard:***
 
 [DICOM Standard](https://www.dicomstandard.org/current)
 
-***另外需要掌握以下的技能:***
+***Additionally, you need to master the following skills:***
 
-1. Docker 技能
-2. Nginx 技能
-3. Linux 技能
-4. PgSQL 技能
+1. Docker skills
+2. Nginx skills
+3. Linux skills
+4. PostgreSQL skills
 
-How To Build A Cloud DICOM-WEB Service. Flow Me:
-** Part One  Database Design and Database Interface **
+How To Build A Cloud DICOM-WEB Service. Follow Me:
 
-1.  [how to use fo-dicom construct cstore-scu](/posts/1-how-to-use-fo-dicom-construct-cstore-scu)
+** Part One: Database Design and Database Interface **
+
+1. [How to use fo-dicom to construct CStore SCU](/posts/1-how-to-use-fo-dicom-construct-cstore-scu)
    
-2.  [DICOM-Cloud-Prepare](/posts/2-dicom-cloud-prepare)
+2. [DICOM Cloud Prepare](/posts/2-dicom-cloud-prepare)
 
-3.  [DICOM-Cloud Part ONE Database-Design](/posts/3.1-dicom-database-design)
+3. [DICOM Cloud Part ONE Database Design](/posts/3.1-dicom-database-design)
    
-4.  [DICOM-Cloud Part ONE Database-TypeDefines](/posts/3.2-dicom-database-types)
+4. [DICOM Cloud Part ONE Database Type Defines](/posts/3.2-dicom-database-types)
 
-5.  [DICOM-Cloud Part ONE DICOM-Database-Interface](/posts/3.3-dicom-database-interface)
- 
+5. [DICOM Cloud Part ONE DICOM Database Interface](/posts/3.3-dicom-database-interface)
 
-** Part Tow  Common Function and Configuration Manager for Services Building **
+** Part Two: Common Function and Configuration Manager for Services Building **
 
-
-1.  [DICOM-Cloud Part Tow 4.1 Common Module Introduce](/posts/4.1-common-index)
-2.  [DICOM-Cloud Part Tow 4.2 storage configuration](/posts/4.2-common-configuration)
-3.  [DICOM-Cloud Part Tow 4.3 database factory](/posts/4.3-common-database)
-4.  [DICOM-Cloud Part Tow 4.4 Redis](/posts/4.4-common-redis)
-4.  [DICOM-Cloud Part Tow 4.4 Kafka Message Publish](/posts/4.5-common-messaging)
-5.  [DICOM-Cloud Part Tow 4.6 Extract Dicom Information](/posts/4.6-common-dicom-processing)
-6.  [DICOM-Cloud Part Tow 4.7 Security](/posts/4.7-common-security)
-7.  [DICOM-Cloud Part Tow 4.8 Write File To Storage](/posts/4.8-common-storage) 
-8.  [DICOM-Cloud Part Tow 5.1 wado-storescp-implemention](/posts/5.1-wado-storescp-implemention) 
-8.  [DICOM-Cloud Part Tow 6.1 wado-consumer service](/posts/6.1-wado-consumer) 
+1. [DICOM Cloud Part Two 4.1 Common Module Introduction](/posts/4.1-common-index)
+2. [DICOM Cloud Part Two 4.2 Storage Configuration](/posts/4.2-common-configuration)
+3. [DICOM Cloud Part Two 4.3 Database Factory](/posts/4.3-common-database)
+4. [DICOM Cloud Part Two 4.4 Redis](/posts/4.4-common-redis)
+5. [DICOM Cloud Part Two 4.4 Kafka Message Publish](/posts/4.5-common-messaging)
+6. [DICOM Cloud Part Two 4.6 Extract DICOM Information](/posts/4.6-common-dicom-processing)
+7. [DICOM Cloud Part Two 4.7 Security](/posts/4.7-common-security)
+8. [DICOM Cloud Part Two 4.8 Write File To Storage](/posts/4.8-common-storage) 
+9. [DICOM Cloud Part Two 5.1 wado-storescp Implementation](/posts/5.1-wado-storescp-implemention) 
+10. [DICOM Cloud Part Two 6.1 wado-consumer Service](/posts/6.1-wado-consumer) 
 
 Use Cornerstone3D to View DICOM Images in a Web Browser.
 
-And finally :
- 
-![图像展示 How to load Dicom Image With WADO-RS](/1.png)
+And finally:
 
-![反色功能 DICOM Viewer Invert Color](/2.png)
+![Image Display How to load DICOM Image With WADO-RS](/1.png)
 
+![Invert Color Function DICOM Viewer Invert Color](/2.png)
 
 ![DICOM View Load Default CT Images](/3.png)
 
+![Window Adjustment DICOM Viewer Adjust WINDOW Level/WINDOW Center](/4.png)
 
-![调窗 DICOM Viewer Adjust   WINDOWS Level/Windows Center](/4.png)
+![Scroll DICOM Viewer Scroll](/5.png)
 
-![移动 DICOM Viewer  Scroll](/5.png)
+![Measurement Tools DICOM Viewer Measurement Tools](/6.png)
 
-![测量工具 DICOM Viewer   Measurement Tools](/6.png)
-
-
-![反色功能 Invert Color2](/7.png)
+![Invert Color Function Invert Color2](/7.png)
 
 ![MPR DICOM MPR Reconstructor](/10.png)
 
 ![MP2 DICOM Viewer MPR With CrossHair](/11.png)
+
+---
+
+*This comprehensive guide provides everything you need to know about building scalable cloud DICOM-WEB services, from architecture design to implementation and deployment. Perfect for healthcare technology professionals looking to implement modern medical imaging solutions.*

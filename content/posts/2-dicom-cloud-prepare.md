@@ -1,56 +1,67 @@
 ---
-title: "构建可扩展的云DICOM-WEB服务的前期准备工作"
+title: "Preparations for Building Scalable Cloud DICOM-WEB Services"
 date: 2025-11-19T15:21:56+08:00
-keywords: "DICOM-WEB , medical imaging,healthcare cloud,DICOM storage"
-description: "构建云DICOM-WEB服务的前期准备工作,主要是数据库,消息队列,缓存,开发语言,服务框架等配置."
+keywords: "DICOM-WEB, medical imaging, healthcare cloud, DICOM storage, cloud DICOM platform, DICOM services"
+description: "Comprehensive guide to preparing infrastructure for scalable cloud DICOM-WEB services, including database, message queue, cache, programming language, and service framework configurations."
 draft: false
-tags: ["DICOM-WEB", "medical imaging", "healthcare cloud", "DICOM storage"]
+tags: ["DICOM-WEB", "medical imaging", "healthcare cloud", "DICOM storage", "cloud DICOM platform"]
+categories: ["Medical Imaging", "DICOM Development", "Healthcare Technology"]
+slug: "preparations-building-scalable-cloud-dicom-web-services"
 ---
 
-本文介绍了一个基于 Rust 语言开发的 DICOM 医疗影像系统架构设计，该系统采用现代化的技术栈，包括 PostgreSQL 作为主索引数据库、Apache Doris 用于日志存储、RedPanda 作为消息队列以及 Redis 作为缓存。系统设计支持单机运行和分布式扩展，充分利用了 Rust 语言的安全性和性能优势。
+# Preparations for Building Scalable Cloud DICOM-WEB Services
 
-DICOM 医疗影像系统架构概览及运行环境介绍
+This article introduces the architectural design of a DICOM medical imaging system developed using Rust, which employs a modern technology stack including PostgreSQL as the primary index database, Apache Doris for log storage, RedPanda as the message queue, and Redis for caching. The system design supports both standalone operation and distributed scaling, fully leveraging the safety and performance advantages of the Rust programming language.
 
-核心组件
--   PostgreSQL: 主索引数据库，存储患者、检查、序列等核心元数据
--   Apache Doris: 日志存储，记录 DICOM CStoreSCP 服务和 WADO-RS 服务访问日志
--   RedPanda: 消息队列，处理系统间异步通信
--   Redis: 缓存层，提升系统响应速度
--   Rust: 开发语言，利用 dicom-rs 库处理 DICOM 数据
+## Overview of DICOM Medical Imaging System Architecture and Runtime Environment
 
-服务模块
+### Core Components
 
--   wado-storescp: DICOM CStoreSCP 服务，接收 DICOM 文件并写入磁盘
--   wado-consumer: 消费消息队列中的存储事件，提取元数据并写入数据库
--   wado-server: DICOM WEB WADO-RS API 接口实现
--   wado-webworker: 定期生成 JSON 格式的元数据用于加速访问
-  
-数据库设计
--   PostgreSQL 主索引数据库
--   PostgreSQL 作为主索引数据库存储核心元数据，包括:
--   dicom_state_meta: 存储患者、检查、序列级别的元数据
--   dicom_json_meta: 记录需要生成 JSON 格式元数据的序列信息
-  
-Apache Doris 日志存储
--   Apache Doris 用于存储各种服务日志:
--   DicomStateMeta: DICOM 状态元数据
--   DicomImageMeta: DICOM 影像元数据
--   WadoAccessLog: WADO 访问日志
-  
-Docker Compose 脚步
+- **PostgreSQL**: Primary index database storing core metadata such as patients, studies, and series
+- **Apache Doris**: Log storage for recording DICOM CStoreSCP service and WADO-RS service access logs
+- **RedPanda**: Message queue for handling asynchronous communication between systems
+- **Redis**: Cache layer to improve system response speed
+- **Rust**: Programming language utilizing the dicom-rs library for DICOM data processing
 
-我们假设你的数据库服务器IP地址为 192.168.1.14
+### Service Modules
 
-操作系统 Ubuntu 22.04.5  LTS
+- **wado-storescp**: DICOM CStoreSCP service that receives DICOM files and writes them to disk
+- **wado-consumer**: Consumes storage events from message queues, extracts metadata, and writes to databases
+- **wado-server**: DICOM WEB WADO-RS API interface implementation
+- **wado-webworker**: Periodically generates JSON-formatted metadata for accelerated access
 
-- PostgreSQL
+## Database Design
+
+### PostgreSQL Primary Index Database
+
+PostgreSQL serves as the primary index database for storing core metadata, including:
+
+- **dicom_state_meta**: Stores patient, study, and series-level metadata
+- **dicom_json_meta**: Records sequence information requiring JSON-formatted metadata generation
+
+### Apache Doris Log Storage
+
+Apache Doris is used to store various service logs:
+
+- **DicomStateMeta**: DICOM state metadata
+- **DicomImageMeta**: DICOM image metadata
+- **WadoAccessLog**: WADO access logs
+
+## Docker Compose Scripts
+
+We assume your database server IP address is 192.168.1.14
+
+Operating System: Ubuntu 22.04.5 LTS
+
+### PostgreSQL Setup
+
 ```yaml
 version: '3'
 
 services:
   pgdb:
     image: ankane/pgvector:latest
-    container_name: pgappx  # 你写的是 container:pgappx，应为 container_name
+    container_name: pgappx
     restart: always
     environment:
       POSTGRES_PASSWORD: "xDicom123"
@@ -58,15 +69,14 @@ services:
       PGTZ: "Asia/Shanghai"
     volumes:
       - ./pgdata:/var/lib/postgresql/data
-      - ./pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf  # ✅ 正确路径
+      - ./pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
     ports:
       - "5432:5432"
 ```
 
-- Redis And  PgAdmin
-  
+### Redis, RabbitMQ, and PgAdmin Setup
 ```yaml
-version: '3'
+ version: '3'
 
 services:
   redis:
@@ -77,16 +87,15 @@ services:
     ports:
       - "6379:6379"
   rabbitmq:
-    image: rabbitmq:management # 使用官方带有管理插件的RabbitMQ镜像
+    image: rabbitmq:management
     ports:
-      - "5672:5672" # 暴露RabbitMQ AMQP协议端口
-      - "15672:15672" # 暴露RabbitMQ管理界面端口
+      - "5672:5672"
+      - "15672:15672"
     environment:
-      RABBITMQ_DEFAULT_USER: admin   # 设置默认用户名
-      RABBITMQ_DEFAULT_PASS: xDicom123  # 设置默认密码
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: xDicom123
     volumes:
-      - ./rabbitmq/data:/var/lib/rabbitmq # 将宿主机的目录映射到容器内存储消息队列的数据目录（可选）
-
+      - ./rabbitmq/data:/var/lib/rabbitmq
 
   pgadmin:
     user: root
@@ -105,22 +114,23 @@ services:
       - "9443:443"
     volumes:
       - ./pgadmin:/var/lib/pgadmin
+```
 
-  ```
 
-  - Doris  And  RedPanda
+### Apache Doris and RedPanda Setup
+Refer to the official documentation for Doris and RedPanda.
+
+
   
-  参考Doris 和 RedPanda 的官方文档
-  
-  启动 Doris
+Starting Doris
 
 ```bash
 ./Doris3.X/3.1.0/fe/bin/start_fe.sh --daemon
 ./Doris3.X/3.1.0/be/bin/start_be.sh --daemon
 ```
   
-  RedPanda  操作消息队列
- - 创建队列
+### RedPanda Message Queue Operations
+- Creating Topics:
 ```bash 
 rpk topic create dicom_image_queue  --partitions 1 --replicas 1
 rpk topic create dicom_state_queue  --partitions 1 --replicas 1
@@ -128,7 +138,7 @@ rpk topic create log_queue          --partitions 1 --replicas 1
 rpk topic create storage_queue      --partitions 1 --replicas 1
 ```
 
-- 清空队列
+- Clearing Topics:
 ```bash
 rpk topic trim-prefix dicom_image_queue  -p 0 --offset end --no-confirm
 rpk topic trim-prefix dicom_state_queue  -p 0 --offset end --no-confirm
@@ -136,9 +146,9 @@ rpk topic trim-prefix log_queue          -p 0 --offset end --no-confirm
 rpk topic trim-prefix storage_queue      -p 0 --offset end --no-confirm
 ```
 
-### 数据库初始化脚步
+### Database Initialization Scripts
 
-- 主数据库Postgresql 创建脚步
+- Primary Database (PostgreSQL) Creation Script
 ```pgsql
 create table dicom_state_meta
 (
@@ -198,13 +208,13 @@ ALTER TABLE dicom_json_meta
 ADD CONSTRAINT PK_dicom_json_meta PRIMARY KEY (tenant_id, study_uid, series_uid);
 ```
 
--  Doris 数据库表及构建Stream_load 配置
+-  Apache Doris Database Tables and Stream Load Configuration
 ```sql
-drop  table IF   EXISTS  dicom_object_meta;
+ drop  table IF   EXISTS  dicom_object_meta;
 create table IF NOT EXISTS  dicom_object_meta
 (
-    tenant_id           varchar(64)   not null comment '租户ID',
-    patient_id          varchar(64)   not null comment '患者ID',
+    tenant_id           varchar(64)   not null comment 'Tenant ID',
+    patient_id          varchar(64)   not null comment 'Patient ID',
     study_uid           varchar(64)   null,
     series_uid          varchar(64)   null,
     sop_uid             varchar(64)   null,
@@ -221,19 +231,19 @@ create table IF NOT EXISTS  dicom_object_meta
     transfer_status     varchar(64)   null,
     source_ip           varchar(24)   null,
     source_ae           varchar(64)   null,
-    trace_id            varchar(36)   not null comment '全局唯一追踪ID，作为主键',
-    worker_node_id      varchar(64)   not null comment '工作节点 ID'
+    trace_id            varchar(36)   not null comment 'Globally unique trace ID, as primary key',
+    worker_node_id      varchar(64)   not null comment 'Worker node ID'
 )
 ENGINE=OLAP
-DUPLICATE KEY(tenant_id,patient_id,study_uid,series_uid,sop_uid)  -- 逻辑主键，自动去重
+DUPLICATE KEY(tenant_id,patient_id,study_uid,series_uid,sop_uid)
 DISTRIBUTED BY HASH(tenant_id) BUCKETS 1
 PROPERTIES("replication_num" = "1");
 
 
 DROP TABLE IF  EXISTS dicom_state_meta;
 CREATE TABLE IF NOT EXISTS dicom_state_meta (
-    -- 基本标识信息
-                                                tenant_id VARCHAR(64) NOT NULL,
+    -- Basic identification information
+    tenant_id VARCHAR(64) NOT NULL,
     patient_id VARCHAR(64) NOT NULL,
     study_uid VARCHAR(64) NOT NULL,
     series_uid VARCHAR(64) NOT NULL,
@@ -241,7 +251,7 @@ CREATE TABLE IF NOT EXISTS dicom_state_meta (
     series_uid_hash  VARCHAR(20)   NOT NULL,
     study_date_origin VARCHAR(8) NOT NULL,
 
-    -- 患者信息
+    -- Patient information
     patient_name VARCHAR(64) NULL,
     patient_sex VARCHAR(1) NULL,
     patient_birth_date DATE NULL,
@@ -251,15 +261,14 @@ CREATE TABLE IF NOT EXISTS dicom_state_meta (
     patient_weight DOUBLE NULL,
     pregnancy_status INT NULL,
 
-    -- 检查信息
+    -- Study information
     study_date DATE NOT NULL,
     study_time VARCHAR(16) NULL,
     accession_number VARCHAR(16) NOT NULL,
     study_id VARCHAR(16) NULL,
     study_description VARCHAR(64) NULL,
 
-
-    -- 序列信息
+    -- Series information
     modality VARCHAR(16) NULL,
     series_number INT NULL,
     series_date DATE NULL,
@@ -267,10 +276,11 @@ CREATE TABLE IF NOT EXISTS dicom_state_meta (
     series_description VARCHAR(256) NULL,
     body_part_examined VARCHAR(64) NULL,
     protocol_name VARCHAR(64) NULL,
-    -- 时间戳
+    
+    -- Timestamps
     created_time DATETIME NULL,
     updated_time DATETIME NULL
-    )
+)
 ENGINE=OLAP
 UNIQUE KEY(tenant_id, patient_id, study_uid, series_uid)
 DISTRIBUTED BY HASH(tenant_id) BUCKETS 1
@@ -279,61 +289,61 @@ PROPERTIES("replication_num" = "1");
 
 DROP TABLE IF   EXISTS dicom_image_meta ;
 CREATE TABLE IF NOT EXISTS dicom_image_meta (
-    -- 基本标识信息
-                                                tenant_id VARCHAR(64) NOT NULL COMMENT "租户ID",
-    patient_id VARCHAR(64) NOT NULL COMMENT "患者ID",
-    study_uid VARCHAR(64) NOT NULL COMMENT "检查UID",
-    series_uid VARCHAR(64) NOT NULL COMMENT "序列UID",
-    sop_uid VARCHAR(64) NOT NULL COMMENT "实例UID",
+    -- Basic identification information
+    tenant_id VARCHAR(64) NOT NULL COMMENT "Tenant ID",
+    patient_id VARCHAR(64) NOT NULL COMMENT "Patient ID",
+    study_uid VARCHAR(64) NOT NULL COMMENT "Study UID",
+    series_uid VARCHAR(64) NOT NULL COMMENT "Series UID",
+    sop_uid VARCHAR(64) NOT NULL COMMENT "Instance UID",
 
-    -- 哈希值
-    study_uid_hash  VARCHAR(20) NOT NULL COMMENT "检查UID哈希值",
-    series_uid_hash   VARCHAR(20)   NOT NULL COMMENT "序列UID哈希值",
+    -- Hash values
+    study_uid_hash  VARCHAR(20) NOT NULL COMMENT "Study UID hash value",
+    series_uid_hash   VARCHAR(20)   NOT NULL COMMENT "Series UID hash value",
 
-    -- 时间相关
-    study_date_origin DATE NOT NULL COMMENT "检查日期(原始格式)",
-    content_date DATE COMMENT "内容日期",
-    content_time VARCHAR(32) COMMENT "内容时间",
+    -- Time related
+    study_date_origin DATE NOT NULL COMMENT "Study date (original format)",
+    content_date DATE COMMENT "Content date",
+    content_time VARCHAR(32) COMMENT "Content time",
 
 
-    -- 图像基本信息
-    instance_number INT COMMENT "实例编号",
-    image_type VARCHAR(128) COMMENT "图像类型",
-    image_orientation_patient VARCHAR(128) COMMENT "图像方向(患者坐标系)",
-    image_position_patient VARCHAR(64) COMMENT "图像位置(患者坐标系)",
+    -- Image basic information
+    instance_number INT COMMENT "Instance number",
+    image_type VARCHAR(128) COMMENT "Image type",
+    image_orientation_patient VARCHAR(128) COMMENT "Image orientation (patient coordinate system)",
+    image_position_patient VARCHAR(64) COMMENT "Image position (patient coordinate system)",
 
-    -- 图像尺寸参数
-    slice_thickness DOUBLE COMMENT "层厚",
-    spacing_between_slices DOUBLE COMMENT "层间距",
-    slice_location DOUBLE COMMENT "切片位置",
+    -- Image dimension parameters
+    slice_thickness DOUBLE COMMENT "Slice thickness",
+    spacing_between_slices DOUBLE COMMENT "Spacing between slices",
+    slice_location DOUBLE COMMENT "Slice location",
 
-    -- 像素数据属性
-    samples_per_pixel INT COMMENT "每个像素采样数",
-    photometric_interpretation VARCHAR(32) COMMENT "光度解释",
-    width INT COMMENT "图像行数",
-    columns INT COMMENT "图像列数",
-    bits_allocated INT COMMENT "分配位数",
-    bits_stored INT COMMENT "存储位数",
-    high_bit INT COMMENT "高比特位",
-    pixel_representation INT COMMENT "像素表示法",
+    -- Pixel data attributes
+    samples_per_pixel INT COMMENT "Samples per pixel",
+    photometric_interpretation VARCHAR(32) COMMENT "Photometric interpretation",
+    width INT COMMENT "Image rows",
+    columns INT COMMENT "Image columns",
+    bits_allocated INT COMMENT "Bits allocated",
+    bits_stored INT COMMENT "Bits stored",
+    high_bit INT COMMENT "High bit",
+    pixel_representation INT COMMENT "Pixel representation",
 
-    -- 重建参数
-    rescale_intercept DOUBLE COMMENT "重建截距",
-    rescale_slope DOUBLE COMMENT "重建斜率",
-    rescale_type VARCHAR(64) COMMENT "重建类型",
-    window_center VARCHAR(64) COMMENT "窗位中心",
-    window_width VARCHAR(64) COMMENT "窗宽",
+    -- Reconstruction parameters
+    rescale_intercept DOUBLE COMMENT "Reconstruction intercept",
+    rescale_slope DOUBLE COMMENT "Reconstruction slope",
+    rescale_type VARCHAR(64) COMMENT "Reconstruction type",
+    window_center VARCHAR(64) COMMENT "Window center",
+    window_width VARCHAR(64) COMMENT "Window width",
 
-    -- 传输和分类信息
-    transfer_syntax_uid VARCHAR(64) NOT NULL COMMENT "传输语法UID",
-    pixel_data_location VARCHAR(512) COMMENT "像素数据位置",
-    thumbnail_location VARCHAR(512) COMMENT "缩略图位置",
-    sop_class_uid VARCHAR(64) NOT NULL COMMENT "SOP类UID",
-    image_status VARCHAR(32) COMMENT "图像状态",
-    space_size BIGINT COMMENT "占用空间大小",
-    created_time DATETIME COMMENT "创建时间",
-    updated_time DATETIME COMMENT "更新时间",
-    )
+    -- Transfer and classification information
+    transfer_syntax_uid VARCHAR(64) NOT NULL COMMENT "Transfer syntax UID",
+    pixel_data_location VARCHAR(512) COMMENT "Pixel data location",
+    thumbnail_location VARCHAR(512) COMMENT "Thumbnail location",
+    sop_class_uid VARCHAR(64) NOT NULL COMMENT "SOP class UID",
+    image_status VARCHAR(32) COMMENT "Image status",
+    space_size BIGINT COMMENT "Occupied space size",
+    created_time DATETIME COMMENT "Creation time",
+    updated_time DATETIME COMMENT "Update time"
+)
 ENGINE=OLAP
 UNIQUE KEY(tenant_id, patient_id, study_uid, series_uid, sop_uid)
 DISTRIBUTED BY HASH(tenant_id) BUCKETS 1
@@ -492,7 +502,10 @@ FROM KAFKA (
 );
 ```
 
-此处创建了3个ROUTINE LOAD任务，分别对应了DICOM对象的元数据、DICOM状态元数据和DICOM图像元数据。
-WADO-RS ACCESS_LOG 可以同样处理.看实际需求.
+This creates 3 ROUTINE LOAD tasks corresponding to DICOM object metadata, DICOM state metadata, and DICOM image metadata. WADO-RS access logs can be handled similarly based on actual requirements.
+
+For more information about building cloud DICOM systems, see our guide on how to build cloud DICOM systems.
+
+This comprehensive guide provides all necessary preparations for building scalable cloud DICOM-WEB services, covering infrastructure setup, database design, and system architecture considerations for medical imaging applications.
 
 GoTo  Summary  : [how-to-build-cloud-dicom](/posts/how-to-build-cloud-dicom)

@@ -3,9 +3,7 @@ title: "How to Build Scalable Cloud DICOM-WEB Services | DICOM Cloud"
 date: 2025-11-19T10:23:56+08:00
 keywords: "DICOM-WEB, medical imaging, healthcare cloud, DICOM storage, cloud DICOM platform, DICOM services, medical DICOM platform"
 description: "Complete guide to building scalable cloud DICOM-WEB services using open-source projects. Learn architecture, implementation, and deployment strategies for medical imaging platforms."
-draft: false
 weight: 1
-featured: true
 tags: ["DICOM-WEB", "medical imaging", "healthcare cloud", "DICOM storage", "cloud DICOM platform"]
 categories: ["Medical Imaging", "DICOM Development", "Healthcare Technology"]
 slug: "how-to-build-scalable-cloud-dicom-web-services"

@@ -11,4 +11,4 @@ You Can  Contact Me with Email:
 
 Thanks for your attention and support!
 
-感谢您的关注与支持！
+Thank you for your attention and support!

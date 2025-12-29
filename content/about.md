@@ -1,17 +1,20 @@
 ---
-title: "关于"
+title: "about"
 date: 2025-11-17
 type: "page"
 layout: "single"
 ---
 
-Cloud Medical Imaging Lab 致力于医学影像技术的研究与分享，重点关注：
+### Cloud Medical Imaging Lab
+Cloud Medical Imaging Lab is dedicated to the research and sharing of medical imaging technologies, with a focus on:
 
-- DICOM 标准解析与应用  
-- PACS 系统开发与集成  
-- 医学 2D/3D 影像的 Web 呈现（如 VTK.js、Cornerstone.js）  
-- 开源工具链实践：DCMTK、Fo-DICOM、Orthanc、Dcm4che 等  
+-   DICOM standard interpretation and application
+-   PACS system development and integration
+-   Web presentation of medical 2D/3D imaging (e.g., VTK.js, Cornerstone.js)
+-   Open source toolchain practices: DCMTK, Fo-DICOM, Orthanc, -    -   Dcm4che, etc.
 
-本站内容均为技术学习与交流用途，不提供任何医疗诊断或临床建议。
+### Purpose Statement
+All content on this site is for technical learning and exchange purposes and does not provide any medical diagnosis or clinical advice.
 
-如有合作或技术交流，欢迎通过下方[联系方式](/contact)联系。
+### Contact Information
+For cooperation or technical exchange, please contact us through the contact information below.

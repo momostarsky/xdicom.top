@@ -5,21 +5,21 @@ type: "page"
 layout: "single"
 ---
 
-# 隐私政策
+### Privacy Policy
+Effective Date: November 17, 2025
 
-生效日期：2025年11月17日
+- 1. Website Overview
+This website (https://xdicom.com) is operated by Cloud Medical Imaging Lab and focuses on sharing medical imaging technologies.
 
-## 1. 网站概述
-本网站（https://xdicom.com）由 Cloud Medical Imaging Lab 运营，专注于医学影像技术分享。
+- 2. How We Use Your Information
+    -   This blog is a static site that does not collect personal user information. However, the following third-party services may involve data processing:
 
-## 2. 我们如何使用您的信息
-本博客为静态站点，**不收集用户个人信息**。但以下第三方服务可能涉及数据处理：
+    -   Google AdSense: Used for displaying advertisements and may use cookies to track user interests. Please refer to Google Privacy Policy.
 
-- **Google AdSense**：用于展示广告，可能使用 Cookie 跟踪用户兴趣。请参阅 [Google 隐私政策](https://policies.google.com/privacy)。
-- **Google Analytics（如有）**：若启用，仅用于统计访问量，不关联个人身份。
+    -   Google Analytics (if applicable): If enabled, used only for traffic statistics and does not associate with personal identity.
 
-## 3. 广告披露
-本网站使用 Google AdSense 展示广告。Google 可能会基于您的访问行为展示个性化广告。您可通过 [Google 广告设置](https://adssettings.google.com/) 管理偏好。
+- 3. Advertising Disclosure
+This website uses Google AdSense to display advertisements. Google may show personalized ads based on your browsing behavior. You can manage your preferences through Google Ad Settings.
 
-## 4. 联系我们
-如对本隐私政策有疑问，请通过 [联系页面](/contact/) 与我们沟通。
+- 4. Contact Us
+If you have any questions about this privacy policy, please contact us through the Contact Page.

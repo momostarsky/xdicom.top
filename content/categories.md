@@ -4,14 +4,16 @@ date: 2025-12-11
 type: "page"
 layout: "single"
 ---
+### Cloud Medical Imaging Lab
+Cloud Medical Imaging Lab is dedicated to the research and sharing of medical imaging technologies, with a focus on:
 
-Cloud Medical Imaging Lab 致力于医学影像技术的研究与分享，重点关注：
+DICOM
+FO-DICOM
+PostgreSQL
+WADO-RS
 
-- DICOM
-- FO-DICOM
-- PostgreSQL
-- WADO-RS
+### Usage 
+All content on this site is for technical learning and exchange purposes, and does not provide any medical diagnosis or clinical advice.
 
-本站内容均为技术学习与交流用途，不提供任何医疗诊断或临床建议。
-
-如有合作或技术交流，欢迎通过下方[联系方式](/contact)联系。
+### Contract 
+For cooperation or technical exchange, please contact us through the contact information below.

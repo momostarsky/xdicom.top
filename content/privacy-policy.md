@@ -1,5 +1,5 @@
 ---
-title: "隐私政策"
+title: "privacy policy"
 date: 2025-11-17
 type: "page"
 layout: "single"

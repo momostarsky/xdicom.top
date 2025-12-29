@@ -1,32 +1,32 @@
 baseURL = "https://xdicom.com/"
 languageCode = "zh-CN"
-title = "Cloud Medical Imaging Lab | 云影像技术研究"
+title = "Cloud Medical Imaging Lab | Dicom Application Technology Research"
 theme = "PaperMod"
 ignoreLogs = ['warning-goldmark-raw-html']
 [build]
-  summaryLength = 120  # 默认是 70 个字（英文单词或中文字符）
+  summaryLength = 120   
 
 [params]
-  description = "专注于医学影像的技术的学习,传播及应用,涉及DICOM标准,PACS开发等.医学2D或是3D影像的解析及呈现,包括DCMTK,FoDICOM,DCH4CHE, VTK.js等开源软件项目的学习及应用"
+  description = "Focused on learning, disseminating, and applying medical imaging technologies, involving DICOM standards, PACS development, etc. Medical 2D or 3D image parsing and presentation, including learning and application of open-source software projects such as DCMTK, Fo-DICOM, Dcm4che, VTK.js, etc"
   author = ""
-  defaultTheme = "auto"  # 可选: light, dark, auto
+  defaultTheme = "auto" 
   customCSS = ["css/extended.css","css/fix-list.css"]
 
 [menu]
   [[menu.main]]
-    name = "首页"
+    name = "Home"
     url = "/"
     weight = 1
   [[menu.main]]
-    name = "文章"
+    name = "Articles"
     url = "/posts/"
     weight = 2
 
   [[menu.main]]
-    name = "关于"
+    name = "About"
     url = "/about/"
     weight = 3
   [[menu.main]]
-    name = "联系"
+    name = "Contract"
     url = "/contact/"
     weight = 4
